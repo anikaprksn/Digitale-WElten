@@ -1,2 +1,2 @@
-# Digitale-WElten
-Beauty finder
+#BeautyFinder
+Kosmetikprodukte in Geschäfte finden
