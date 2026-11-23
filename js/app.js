@@ -80,20 +80,32 @@
     map = L.map("map", { zoomControl: false, minZoom: 10, maxBounds: [[52.2, 12.8], [52.8, 14.0]] }).setView([52.505, 13.39], 12);
     L.control.zoom({ position: "bottomright" }).addTo(map);
 
-    // Stadtplan: heller, grauer Stil – im Dark Mode die dunkle Variante
+    // Stadtplan von OpenStreetMap (offene Daten, Lizenz ODbL – nur Quellenangabe nötig).
+    // Lädt OSM nicht, springt die App automatisch auf einen Ersatzdienst um.
     const dark = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches
       && document.documentElement.dataset.theme !== "light";
     if (dark) map.getContainer().classList.add("dark-map");
-    const tiles = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? "dark_nolabels" : "light_nolabels"}/{z}/{x}/{y}{r}.png`, {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> · <a href="https://carto.com/">CARTO</a> · Bezirke <a href="https://www.statistik-berlin-brandenburg.de/">AfS BB</a>',
-    }).addTo(map);
-    // Straßennamen als eigene Ebene über den Bezirksflächen
-    L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? "dark_only_labels" : "light_only_labels"}/{z}/{x}/{y}{r}.png`, {
-      maxZoom: 19, pane: "shadowPane", minZoom: 13,
-    }).addTo(map);
-    let tileErrors = 0;
-    tiles.on("tileerror", () => { if (++tileErrors === 8) toast("Stadtplan lädt nicht – Bezirkskarte wird angezeigt"); });
+    const OSM_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende';
+    const DIST_ATTR = ' · Bezirke <a href="https://www.statistik-berlin-brandenburg.de/">AfS BB</a>';
+    const PROVIDERS = [
+      { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", attribution: OSM_ATTR + DIST_ATTR, maxZoom: 19 },
+      { url: "https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png", attribution: OSM_ATTR + " · OSM France" + DIST_ATTR, maxZoom: 19 },
+      { url: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", attribution: OSM_ATTR + " · CARTO" + DIST_ATTR, maxZoom: 19 },
+    ];
+    let providerIdx = 0, tiles = null;
+    const useProvider = (i) => {
+      if (tiles) map.removeLayer(tiles);
+      const pv = PROVIDERS[i];
+      let loaded = 0, failed = 0;
+      tiles = L.tileLayer(pv.url, { maxZoom: pv.maxZoom, attribution: pv.attribution, className: "base-tiles" }).addTo(map);
+      tiles.on("tileload", () => { loaded++; });
+      tiles.on("tileerror", () => {
+        if (loaded > 0 || ++failed !== 4) return;
+        if (providerIdx < PROVIDERS.length - 1) useProvider(++providerIdx);
+        else toast("Stadtplan lädt gerade nicht – die Bezirkskarte wird angezeigt");
+      });
+    };
+    useProvider(0);
 
     // Berliner Bezirke – immer sichtbar, auch ohne Internet-Kartenkacheln
     if (typeof BERLIN_DISTRICTS !== "undefined") {

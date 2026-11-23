@@ -27,4 +27,5 @@ vendor/leaflet/     Kartenbibliothek Leaflet 1.9.4 (BSD-2-Lizenz)
 docs/KONZEPT.md     Idee, Datenquellen, Datenschutz, nächste Schritte
 ```
 
-Karte: © OpenStreetMap-Mitwirkende, Kartenstil © CARTO.
+Karte: © OpenStreetMap-Mitwirkende (offene Daten, ODbL). Ersatzdienste: OSM France, CARTO.
+Bezirksgrenzen: Amt für Statistik Berlin-Brandenburg (CC BY).
