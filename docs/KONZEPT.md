@@ -58,7 +58,8 @@ Routine „Am Waschtag“ (Shampoo, Spülung, Leave-in, Hitzeschutz) und „Ab u
 Ziel „Haarausfall vorbeugen“: Koffein-Shampoo, Kopfhaut-Tonikum und Vorbeugetipps.
 Bei Schuppen, die nicht besser werden, und bei Haarausfall verweist die App auf ärztlichen Rat.
 
-Katalog (Demo): 116 Produkte, davon 56 Haarpflege.
+Katalog (Demo): 121 Produkte, davon 61 Haarpflege.
+Ziele im Haar-Check u. a.: mehr Haarwachstum, kräftigeres Haar, Haarausfall vorbeugen.
 
 ## Die größte Herausforderung: echte Bestandsdaten
 dm und Rossmann zeigen Filialverfügbarkeit bereits in ihren eigenen Apps/Webseiten – es gibt aber **keine

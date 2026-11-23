@@ -181,7 +181,7 @@ const H = (types, thick, scalp, goals, extra = {}) => ({ types, thick, scalp, go
 const ALL_TYPES = ["glatt", "wellig", "lockig", "kraus"];
 PRODUCTS.push(
   { id: "balea-volumen-shampoo", area: "haar", brand: "Balea", name: "Volumen Shampoo 300 ml", category: "shampoo",
-    chains: ["dm"], prices: { dm: 0.95 }, hair: H(["glatt", "wellig"], ["fein"], ["fettig", "normal"], ["volumen"]), tags: [] },
+    chains: ["dm"], prices: { dm: 0.95 }, hair: H(["glatt", "wellig"], ["fein"], ["fettig", "normal"], ["volumen", "haardicke"]), tags: [] },
   { id: "fructis-aloe-shampoo", area: "haar", brand: "Garnier Fructis", name: "Hair Food Aloe Vera Shampoo 350 ml", category: "shampoo",
     chains: ["dm", "rossmann"], prices: { dm: 4.45, rossmann: 4.49 }, hair: H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["feuchtigkeit", "glanz"]), tags: [] },
   { id: "balea-oilrepair-shampoo", area: "haar", brand: "Balea Professional", name: "Oil Repair Intensiv Shampoo 250 ml", category: "shampoo",
@@ -195,21 +195,21 @@ PRODUCTS.push(
   { id: "johnfrieda-silber", area: "haar", brand: "John Frieda", name: "Sheer Blonde Go Blonder Violett-Shampoo", category: "shampoo",
     chains: ["dm", "rossmann", "douglas"], prices: { dm: 7.95, rossmann: 7.99, douglas: 9.99 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "fettig"], ["farbe"], { color: true, blondOnly: true }), tags: [] },
   { id: "alpecin-c1", area: "haar", brand: "Alpecin", name: "Coffein-Shampoo C1 250 ml", category: "shampoo",
-    chains: ["dm", "rossmann"], prices: { dm: 7.45, rossmann: 7.49 }, hair: H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["dichte", "kopfhaut"]), tags: [] },
+    chains: ["dm", "rossmann"], prices: { dm: 7.45, rossmann: 7.49 }, hair: H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["dichte", "kopfhaut", "wachstum"]), tags: [] },
 
   { id: "pantene-repair-spuelung", area: "haar", brand: "Pantene Pro-V", name: "Repair & Care Spülung 200 ml", category: "spuelung",
     chains: ["dm", "rossmann"], prices: { dm: 3.95, rossmann: 3.99 }, hair: H(["glatt", "wellig"], ["mittel", "dick"], ["normal", "trocken", "fettig"], ["reparatur", "glanz"]), tags: [] },
   { id: "elvital-dream-spuelung", area: "haar", brand: "L'Oréal Elvital", name: "Dream Length Spülung 200 ml", category: "spuelung",
     chains: ["dm", "rossmann"], prices: { dm: 3.45, rossmann: 3.49 }, hair: H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["reparatur", "glanz"]), tags: [] },
   { id: "balea-leicht-spuelung", area: "haar", brand: "Balea", name: "Volumen Spülung leicht 300 ml", category: "spuelung",
-    chains: ["dm"], prices: { dm: 0.95 }, hair: H(["glatt", "wellig"], ["fein"], ["fettig", "normal"], ["volumen"]), tags: ["leicht"] },
+    chains: ["dm"], prices: { dm: 0.95 }, hair: H(["glatt", "wellig"], ["fein"], ["fettig", "normal"], ["volumen", "haardicke"]), tags: ["leicht"] },
   { id: "cantu-conditioner", area: "haar", brand: "Cantu", name: "Shea Butter Hydrating Cream Conditioner", category: "spuelung",
     chains: ["dm", "rossmann"], prices: { dm: 7.95, rossmann: 7.99 }, hair: H(["lockig", "kraus", "wellig"], ["mittel", "dick"], ["normal", "trocken"], ["locken", "feuchtigkeit", "frizz"]), tags: [] },
 
   { id: "fructis-papaya-maske", area: "haar", brand: "Garnier Fructis", name: "Hair Food Papaya 3in1 Maske 390 ml", category: "maske",
     chains: ["dm", "rossmann"], prices: { dm: 6.95, rossmann: 6.99 }, hair: H(ALL_TYPES, ["mittel", "dick"], ["normal", "trocken", "fettig"], ["reparatur", "feuchtigkeit"]), tags: [] },
   { id: "olaplex-3", area: "haar", brand: "Olaplex", name: "No. 3 Hair Perfector 100 ml", category: "maske",
-    chains: ["dm", "douglas"], prices: { dm: 29.95, douglas: 29.95 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "trocken", "fettig"], ["reparatur", "farbe"], { color: true }), tags: [] },
+    chains: ["dm", "douglas"], prices: { dm: 29.95, douglas: 29.95 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "trocken", "fettig"], ["reparatur", "farbe", "haardicke"], { color: true }), tags: [] },
   { id: "k18-mask", area: "haar", brand: "K18", name: "Leave-in Molecular Repair Hair Mask 15 ml", category: "maske",
     chains: ["douglas", "sephora"], prices: { douglas: 32.00, sephora: 32.00 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "trocken", "fettig"], ["reparatur", "farbe"], { color: true }), tags: [] },
 
@@ -232,9 +232,9 @@ PRODUCTS.push(
   { id: "briogeo-scalp", area: "haar", brand: "Briogeo", name: "Scalp Revival Charcoal + Coconut Oil Micro-Exfoliating Shampoo", category: "kopfhaut",
     chains: ["sephora"], prices: { sephora: 39.00 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["fettig", "schuppen", "trocken"], ["kopfhaut"]), tags: [] },
   { id: "plantur39-shampoo", area: "haar", brand: "Plantur 39", name: "Phyto-Coffein-Shampoo 250 ml", category: "shampoo",
-    chains: ["dm", "rossmann"], prices: { dm: 6.95, rossmann: 6.99 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "fettig", "trocken"], ["dichte", "kopfhaut"]), tags: [] },
+    chains: ["dm", "rossmann"], prices: { dm: 6.95, rossmann: 6.99 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "fettig", "trocken"], ["dichte", "kopfhaut", "wachstum"]), tags: [] },
   { id: "alpecin-liquid", area: "haar", brand: "Alpecin", name: "Coffein Liquid Kopfhaut-Tonikum 200 ml", category: "kopfhaut",
-    chains: ["dm", "rossmann"], prices: { dm: 9.95, rossmann: 9.99 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "fettig", "trocken"], ["dichte", "kopfhaut"]), tags: [] },
+    chains: ["dm", "rossmann"], prices: { dm: 9.95, rossmann: 9.99 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "fettig", "trocken"], ["dichte", "kopfhaut", "wachstum"]), tags: [] },
   { id: "balea-kopfhaut-serum", area: "haar", brand: "Balea", name: "Kopfhaut-Serum beruhigend 50 ml", category: "kopfhaut",
     chains: ["dm"], prices: { dm: 3.95 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["trocken", "schuppen"], ["kopfhaut"]), tags: [] },
 );
@@ -283,7 +283,7 @@ PRODUCTS.push(
 
   // Haare – Shampoo
   HP("schauma-kraft", "Schauma", "Kraft & Vitalität Shampoo 400 ml", "shampoo", DRO, { dm: 1.45, rossmann: 1.49 }, H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["glanz"])),
-  HP("guhl-volumen-shampoo", "Guhl", "Langzeit Volumen Shampoo 250 ml", "shampoo", DRO, { dm: 4.45, rossmann: 4.49 }, H(["glatt", "wellig"], ["fein"], ["normal", "fettig"], ["volumen"])),
+  HP("guhl-volumen-shampoo", "Guhl", "Langzeit Volumen Shampoo 250 ml", "shampoo", DRO, { dm: 4.45, rossmann: 4.49 }, H(["glatt", "wellig"], ["fein"], ["normal", "fettig"], ["volumen", "haardicke"])),
   HP("isana-repair-shampoo", "Isana Professional", "Repair Shampoo 300 ml", "shampoo", ["rossmann"], { rossmann: 1.79 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken"], ["reparatur"])),
   HP("pantene-repair-shampoo", "Pantene Pro-V", "Repair & Care Shampoo 300 ml", "shampoo", DRO, { dm: 3.95, rossmann: 3.99 }, H(["glatt", "wellig"], ["mittel", "dick"], ["normal", "trocken"], ["reparatur", "glanz"])),
   HP("fructis-banane-shampoo", "Garnier Fructis", "Hair Food Banane Shampoo 350 ml", "shampoo", DRO, { dm: 4.45, rossmann: 4.49 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken"], ["feuchtigkeit"])),
@@ -296,13 +296,13 @@ PRODUCTS.push(
   // Haare – Spülung
   HP("gliss-repair-spuelung", "Gliss", "Ultimate Repair Spülung 200 ml", "spuelung", DRO, { dm: 3.45, rossmann: 3.49 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken", "fettig"], ["reparatur"])),
   HP("isana-repair-spuelung", "Isana Professional", "Repair Spülung 300 ml", "spuelung", ["rossmann"], { rossmann: 1.79 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken"], ["reparatur", "feuchtigkeit"])),
-  HP("guhl-volumen-spuelung", "Guhl", "Langzeit Volumen Spülung 200 ml", "spuelung", DRO, { dm: 4.45, rossmann: 4.49 }, H(["glatt", "wellig"], ["fein"], ["normal", "fettig"], ["volumen"]), ["leicht"]),
+  HP("guhl-volumen-spuelung", "Guhl", "Langzeit Volumen Spülung 200 ml", "spuelung", DRO, { dm: 4.45, rossmann: 4.49 }, H(["glatt", "wellig"], ["fein"], ["normal", "fettig"], ["volumen", "haardicke"]), ["leicht"]),
   HP("olaplex-5", "Olaplex", "No. 5 Bond Maintenance Conditioner 250 ml", "spuelung", ["douglas"], { douglas: 29.95 }, H(ALLT, ALLTH, ["normal", "trocken", "fettig"], ["reparatur", "farbe"], { color: true })),
   HP("fructis-banane-spuelung", "Garnier Fructis", "Hair Food Banane Spülung 200 ml", "spuelung", DRO, { dm: 4.45, rossmann: 4.49 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken"], ["feuchtigkeit", "frizz"])),
 
   // Haare – Kur
   HP("gliss-repair-kur", "Gliss", "Ultimate Repair Kur 300 ml", "maske", DRO, { dm: 4.95, rossmann: 4.99 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken", "fettig"], ["reparatur"])),
-  HP("balea-plex-maske", "Balea Professional", "Plex Bond Repair Maske 150 ml", "maske", ["dm"], { dm: 3.95 }, H(ALLT, ALLTH, ["normal", "trocken", "fettig"], ["reparatur", "farbe"], { color: true })),
+  HP("balea-plex-maske", "Balea Professional", "Plex Bond Repair Maske 150 ml", "maske", ["dm"], { dm: 3.95 }, H(ALLT, ALLTH, ["normal", "trocken", "fettig"], ["reparatur", "farbe", "haardicke"], { color: true })),
   HP("fructis-kokos-maske", "Garnier Fructis", "Hair Food Kokosnuss 3in1 Maske 390 ml", "maske", DRO, { dm: 6.95, rossmann: 6.99 }, H(["wellig", "lockig", "kraus"], ["mittel", "dick"], ["normal", "trocken"], ["locken", "frizz", "feuchtigkeit"])),
   HP("redken-abc-maske", "Redken", "Acidic Bonding Concentrate Intensive Treatment 250 ml", "maske", ["douglas"], { douglas: 32.90 }, H(ALLT, ALLTH, ["normal", "trocken"], ["reparatur", "farbe"], { color: true })),
 
@@ -318,10 +318,19 @@ PRODUCTS.push(
   HP("balea-hitzeschutz", "Balea", "Hitzeschutz Spray 150 ml", "hitzeschutz", ["dm"], { dm: 1.95 }, H(ALLT, ["fein", "mittel"], ["normal", "fettig", "trocken", "schuppen"], []), ["leicht"]),
 
   // Haare – Styling
-  HP("got2b-powder", "got2b", "Volumen Puder Powder'ful 10 g", "styling", DRO, { dm: 4.45, rossmann: 4.49 }, H(["glatt", "wellig"], ["fein"], ["fettig", "normal"], ["volumen"])),
-  HP("taft-volumen-mousse", "Taft", "Volumen Schaumfestiger 150 ml", "styling", DRO, { dm: 2.95, rossmann: 2.99 }, H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["volumen"])),
+  HP("got2b-powder", "got2b", "Volumen Puder Powder'ful 10 g", "styling", DRO, { dm: 4.45, rossmann: 4.49 }, H(["glatt", "wellig"], ["fein"], ["fettig", "normal"], ["volumen", "haardicke"])),
+  HP("taft-volumen-mousse", "Taft", "Volumen Schaumfestiger 150 ml", "styling", DRO, { dm: 2.95, rossmann: 2.99 }, H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["volumen", "haardicke"])),
   HP("moroccanoil-curl-cream", "Moroccanoil", "Intense Curl Cream 300 ml", "styling", ["douglas"], { douglas: 33.95 }, H(["lockig", "kraus"], ["mittel", "dick"], ["normal", "trocken"], ["locken", "frizz"])),
 
   // Haare – Kopfhaut
-  HP("to-hair-density", "The Ordinary", "Multi-Peptide Serum for Hair Density 60 ml", "kopfhaut", ["dm", "douglas", "sephora"], { dm: 19.95, douglas: 21.90, sephora: 21.90 }, H(ALLT, ALLTH, ["normal", "fettig", "trocken"], ["dichte", "kopfhaut"])),
+  HP("to-hair-density", "The Ordinary", "Multi-Peptide Serum for Hair Density 60 ml", "kopfhaut", ["dm", "douglas", "sephora"], { dm: 19.95, douglas: 21.90, sephora: 21.90 }, H(ALLT, ALLTH, ["normal", "fettig", "trocken"], ["dichte", "kopfhaut", "wachstum"])),
+);
+
+// Ziele "kräftigeres Haar" und "Haarwachstum"
+PRODUCTS.push(
+  HP("elvital-fibralogy-shampoo", "L'Oréal Elvital", "Fibralogy Shampoo für mehr Haarfülle 250 ml", "shampoo", DRO, { dm: 4.95, rossmann: 4.99 }, H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["haardicke", "volumen"])),
+  HP("elvital-fibralogy-spuelung", "L'Oréal Elvital", "Fibralogy Spülung für mehr Haarfülle 200 ml", "spuelung", DRO, { dm: 4.95, rossmann: 4.99 }, H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["haardicke", "volumen"]), ["leicht"]),
+  HP("kerastase-densifique", "Kérastase", "Densifique Bain Densité Shampoo 250 ml", "shampoo", ["douglas"], { douglas: 32.95 }, H(ALLT, ["fein", "mittel"], ["normal", "fettig"], ["haardicke", "volumen", "dichte"])),
+  HP("plantur39-tonikum", "Plantur 39", "Coffein-Tonikum 200 ml", "kopfhaut", DRO, { dm: 9.95, rossmann: 9.99 }, H(ALLT, ALLTH, ["normal", "fettig", "trocken"], ["wachstum", "dichte", "kopfhaut"])),
+  HP("balea-wachstum-serum", "Balea", "Haarwachstums-Serum mit Koffein 100 ml", "kopfhaut", ["dm"], { dm: 4.95 }, H(ALLT, ALLTH, ["normal", "fettig", "trocken"], ["wachstum", "kopfhaut"])),
 );
