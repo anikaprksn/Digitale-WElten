@@ -1,12 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="14" fill="#0d1838"/>
-  <!-- Kosmetikflasche -->
-  <rect x="19" y="10" width="12" height="9" rx="2.5" fill="#ffffff"/>
-  <rect x="21.5" y="18" width="7" height="5" fill="#ffffff"/>
-  <rect x="14" y="22" width="22" height="31" rx="6" fill="#ffffff"/>
-  <rect x="18.5" y="31" width="13" height="9" rx="2" fill="#0d1838" opacity=".18"/>
+  <!-- Serumflasche mit Pipette -->
+  <rect x="20.5" y="6" width="9" height="10" rx="4.5" fill="#ffffff"/>
+  <rect x="18" y="15" width="14" height="6.5" rx="1.8" fill="#ffffff"/>
+  <rect x="21" y="21" width="8" height="3" fill="#ffffff"/>
+  <rect x="13.5" y="23.5" width="23" height="30" rx="6.5" fill="#ffffff"/>
+  <rect x="24" y="24" width="2" height="19" rx="1" fill="#0d1838" opacity=".22"/>
+  <path d="M16.5 37 H33.5 V47 a3.5 3.5 0 0 1 -3.5 3.5 H20 a3.5 3.5 0 0 1 -3.5 -3.5 Z" fill="#0d1838" opacity=".16"/>
   <!-- Lupe -->
-  <circle cx="40" cy="38" r="10.5" fill="#0d1838" stroke="#ffffff" stroke-width="4"/>
-  <circle cx="40" cy="38" r="5.5" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-dasharray="7 30" stroke-linecap="round" opacity=".7" transform="rotate(200 40 38)"/>
-  <path d="M47.8 45.8 L54 52" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
+  <circle cx="41" cy="39" r="10.5" fill="#0d1838" stroke="#ffffff" stroke-width="4"/>
+  <circle cx="41" cy="39" r="5.5" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-dasharray="7 30" stroke-linecap="round" opacity=".7" transform="rotate(200 41 39)"/>
+  <path d="M48.8 46.8 L54.5 52.5" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
 </svg>
