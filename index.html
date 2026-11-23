@@ -56,6 +56,11 @@
             <p class="eyebrow">Berlin · 24 Filialen · 4 Händler</p>
             <h2>Was suchst du?</h2>
             <p>Gib ein Produkt ein – wir zeigen dir, in welcher Filiale von dm, Rossmann, Douglas oder Sephora in deiner Nähe es gerade vorrätig ist.</p>
+            <div class="browse">
+              <span class="browse-label">Nach Kategorie stöbern</span>
+              <div class="seg" id="browse-tabs" role="tablist"></div>
+              <ul id="browse-list" class="browse-list"></ul>
+            </div>
             <div class="popular">
               <span>Beliebt:</span>
               <div id="popular-list"></div>
@@ -76,18 +81,17 @@
     <!-- ============ TAB: HAUT-CHECK ============ -->
     <section id="tab-skin" class="tab" aria-label="Haut-Check">
       <div class="skin-wrap">
-
         <!-- Start -->
         <div id="skin-intro" class="skin-intro">
-          <p class="eyebrow">Haut-Check · <span id="season-name"></span></p>
+          <p class="eyebrow">Haut-Check · <span class="season-name"></span></p>
           <h2 class="intro-title">Finde die Routine, die deine Haut gerade braucht.</h2>
           <p class="intro-text">Beantworte ein paar kurze Fragen zu deiner Haut und deinem Alltag. Du bekommst eine Routine für morgens und abends, passend zur Jahreszeit und mit Produkten, die du in Berlin direkt bekommst.</p>
           <div class="intro-meta">
-            <span><b id="quiz-total"></b> Fragen</span>
+            <span><b id="skin-total"></b> Fragen</span>
             <span><b>ca. 2</b> Minuten</span>
             <span><b>Kein</b> Konto nötig</span>
           </div>
-          <button type="button" class="primary-btn" id="quiz-start">Haut-Check starten</button>
+          <button type="button" class="primary-btn" id="skin-start">Haut-Check starten</button>
 
           <div class="scan-teaser">
             <div class="scan-icon" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div>
@@ -101,16 +105,48 @@
         <!-- Fragen -->
         <div id="skin-quiz" class="skin-quiz" hidden>
           <div class="quiz-top">
-            <button type="button" class="link-btn" id="quiz-back">Zurück</button>
-            <span id="quiz-count" class="quiz-count"></span>
+            <button type="button" class="link-btn" id="skin-back">Zurück</button>
+            <span id="skin-count" class="quiz-count"></span>
           </div>
-          <div class="quiz-bar" aria-hidden="true"><span id="quiz-progress"></span></div>
-          <div id="quiz-body" class="quiz-body" aria-live="polite"></div>
-          <button type="button" class="primary-btn" id="quiz-next" hidden>Weiter</button>
+          <div class="quiz-bar" aria-hidden="true"><span id="skin-progress"></span></div>
+          <div id="skin-body" class="quiz-body" aria-live="polite"></div>
+          <button type="button" class="primary-btn" id="skin-next" hidden>Weiter</button>
         </div>
 
         <!-- Ergebnis -->
         <div id="skin-result" class="routine" hidden></div>
+      </div>
+    </section>
+
+    <!-- ============ TAB: HAAR-CHECK ============ -->
+    <section id="tab-hair" class="tab" aria-label="Haar-Check">
+      <div class="skin-wrap">
+        <!-- Start -->
+        <div id="hair-intro" class="skin-intro">
+          <p class="eyebrow">Haar-Check · <span class="season-name"></span></p>
+          <h2 class="intro-title">Finde die Pflege, die zu deinen Haaren passt.</h2>
+          <p class="intro-text">Ein paar Fragen zu Haartyp, Kopfhaut und Styling. Du bekommst eine Pflegeroutine für Wäsche, Kur und Styling, mit Produkten aus Berliner Drogerien und Parfümerien.</p>
+          <div class="intro-meta">
+            <span><b id="hair-total"></b> Fragen</span>
+            <span><b>ca. 2</b> Minuten</span>
+            <span><b>Kein</b> Konto nötig</span>
+          </div>
+          <button type="button" class="primary-btn" id="hair-start">Haar-Check starten</button>
+        </div>
+
+        <!-- Fragen -->
+        <div id="hair-quiz" class="skin-quiz" hidden>
+          <div class="quiz-top">
+            <button type="button" class="link-btn" id="hair-back">Zurück</button>
+            <span id="hair-count" class="quiz-count"></span>
+          </div>
+          <div class="quiz-bar" aria-hidden="true"><span id="hair-progress"></span></div>
+          <div id="hair-body" class="quiz-body" aria-live="polite"></div>
+          <button type="button" class="primary-btn" id="hair-next" hidden>Weiter</button>
+        </div>
+
+        <!-- Ergebnis -->
+        <div id="hair-result" class="routine" hidden></div>
       </div>
     </section>
   </main>
@@ -121,6 +157,9 @@
     </button>
     <button type="button" class="tab-btn" data-tab="tab-skin">
       <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg>Haut-Check
+    </button>
+    <button type="button" class="tab-btn" data-tab="tab-hair">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3c-2.2 3.5 2.2 5.5 0 9s2.2 5.5 0 9M12 3c-2.2 3.5 2.2 5.5 0 9s2.2 5.5 0 9M17 3c-2.2 3.5 2.2 5.5 0 9s2.2 5.5 0 9"/></svg>Haar-Check
     </button>
   </nav>
 

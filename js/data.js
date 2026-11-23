@@ -68,7 +68,7 @@ const PRODUCTS = [
   { id: "to-niacinamide", brand: "The Ordinary", name: "Niacinamide 10% + Zinc 1% 30 ml", category: "serum",
     chains: ["dm", "douglas", "sephora"], prices: { dm: 6.95, douglas: 7.50, sephora: 7.50 },
     skin: ["fettig", "mischhaut", "normal"], concerns: ["unreinheiten", "glanz", "pigmentflecken"], tags: ["parfuemfrei", "leicht"], time: "beides" },
-  { id: "to-hyaluronic", brand: "The Ordinary", name: "Hyaluronic Acid 2% + B5 30 ml", category: "serum",
+  { id: "to-hyaluronic", brand: "The Ordinary", name: "Hyaluronic Acid 2% + B5 30 ml", category: "feuchtigkeit",
     chains: ["dm", "douglas", "sephora"], prices: { dm: 8.95, douglas: 9.90, sephora: 9.90 },
     skin: ["trocken", "normal", "mischhaut", "fettig"], concerns: ["trockenheit", "falten"], tags: ["parfuemfrei", "leicht"], time: "beides" },
   { id: "lrp-uvmune", brand: "La Roche-Posay", name: "Anthelios UVMune 400 Fluid LSF 50+", category: "sonnenschutz",
@@ -98,7 +98,7 @@ const PRODUCTS = [
   { id: "eucerin-filler", brand: "Eucerin", name: "Hyaluron-Filler Tagespflege LSF 30", category: "pflege",
     chains: ["dm", "rossmann", "douglas"], prices: { dm: 27.95, rossmann: 27.99, douglas: 32.99 },
     skin: ["trocken", "normal"], concerns: ["falten", "trockenheit"], tags: ["reichhaltig"], time: "morgens" },
-  { id: "paulas-bha", brand: "Paula's Choice", name: "Skin Perfecting 2% BHA Liquid 118 ml", category: "serum",
+  { id: "paulas-bha", brand: "Paula's Choice", name: "Skin Perfecting 2% BHA Liquid 118 ml", category: "peeling", acid: "bha",
     chains: ["douglas"], prices: { douglas: 36.00 },
     skin: ["fettig", "mischhaut"], concerns: ["unreinheiten", "glanz"], tags: ["parfuemfrei", "aktiv"], time: "abends" },
   { id: "clinique-surge", brand: "Clinique", name: "Moisture Surge 100H 50 ml", category: "pflege",
@@ -134,12 +134,105 @@ const PRODUCTS = [
 ];
 
 PRODUCTS.push(
-  { id: "to-retinol", brand: "The Ordinary", name: "Retinol 0.5% in Squalane 30 ml", category: "serum",
+  { id: "to-retinol", brand: "The Ordinary", name: "Retinol 0.5% in Squalane 30 ml", category: "retinoid",
     chains: ["dm", "douglas", "sephora"], prices: { dm: 8.95, douglas: 9.90, sephora: 9.90 },
     skin: ["normal", "mischhaut", "trocken", "fettig"], concerns: ["falten", "pigmentflecken", "unreinheiten"], tags: ["parfuemfrei", "aktiv"], time: "abends" },
   { id: "garnier-vitc", brand: "Garnier", name: "Vitamin C Glow Booster Serum 30 ml", category: "serum",
     chains: ["dm", "rossmann"], prices: { dm: 12.95, rossmann: 12.99 },
     skin: ["normal", "mischhaut", "fettig"], concerns: ["pigmentflecken"], tags: ["leicht"], time: "morgens" },
+);
+
+// ---------- Hautpflege-Ergänzungen (Auswahl orientiert an öffentlich geteilten Tipps von Leon / @xskincare) ----------
+PRODUCTS.push(
+  { id: "balea-niacin-azelain", brand: "Balea", name: "Serum Niacinamid & Azelainsäure 30 ml", category: "serum",
+    chains: ["dm"], prices: { dm: 4.95 },
+    skin: ["fettig", "mischhaut", "normal"], concerns: ["unreinheiten", "roetungen", "pigmentflecken", "glanz"], tags: ["leicht"], time: "beides" },
+  { id: "balea-hydro-serum", brand: "Balea", name: "Hydro Serum mit Glycerin & Panthenol 30 ml", category: "feuchtigkeit",
+    chains: ["dm"], prices: { dm: 3.95 },
+    skin: ["trocken", "normal", "mischhaut", "fettig"], concerns: ["trockenheit", "roetungen"], tags: ["parfuemfrei", "glycerin", "leicht"], time: "beides" },
+  { id: "no-peeling-cleanser", brand: "Nø Cosmetics", name: "AHA/PHA Peeling Cleanser 150 ml", category: "reinigung",
+    chains: ["dm", "rossmann"], prices: { dm: 8.95, rossmann: 8.99 },
+    skin: ["fettig", "mischhaut", "normal"], concerns: ["unreinheiten", "pigmentflecken", "glanz"], tags: ["aktiv"], time: "abends" },
+  { id: "no-120h-cream", brand: "Nø Cosmetics", name: "120h Hyper Moisture Cream 50 ml", category: "pflege",
+    chains: ["dm", "rossmann"], prices: { dm: 9.95, rossmann: 9.99 },
+    skin: ["fettig", "mischhaut", "normal"], concerns: ["trockenheit"], tags: ["leicht", "glycerin"], time: "beides" },
+  { id: "eucerin-oilcontrol", brand: "Eucerin", name: "Oil Control Sun Gel-Creme LSF 50+ 50 ml", category: "sonnenschutz",
+    chains: ["dm", "rossmann", "douglas"], prices: { dm: 19.95, rossmann: 19.99, douglas: 22.99 },
+    skin: ["fettig", "mischhaut"], concerns: ["sonnenschutz", "glanz", "unreinheiten"], tags: ["leicht"], time: "morgens" },
+  { id: "garnier-spf-fluid", brand: "Garnier", name: "Ambre Solaire Sensitive Expert+ Fluid LSF 50+", category: "sonnenschutz",
+    chains: ["dm", "rossmann"], prices: { dm: 9.95, rossmann: 9.99 },
+    skin: ["trocken", "normal", "mischhaut", "fettig"], concerns: ["sonnenschutz", "roetungen"], tags: ["leicht"], time: "morgens" },
+  { id: "sunozon-fluid", brand: "Sun Ozon", name: "Sonnenfluid LSF 50 50 ml", category: "sonnenschutz",
+    chains: ["rossmann"], prices: { rossmann: 3.99 },
+    skin: ["normal", "mischhaut", "fettig"], concerns: ["sonnenschutz"], tags: ["leicht"], time: "morgens" },
+  { id: "to-salicylic", brand: "The Ordinary", name: "Salicylic Acid 2% Solution 30 ml", category: "peeling", acid: "bha",
+    chains: ["dm", "douglas", "sephora"], prices: { dm: 6.95, douglas: 7.50, sephora: 7.50 },
+    skin: ["fettig", "mischhaut"], concerns: ["unreinheiten", "glanz"], tags: ["aktiv", "parfuemfrei"], time: "abends" },
+  { id: "to-glycolic", brand: "The Ordinary", name: "Glycolic Acid 7% Exfoliating Toner 240 ml", category: "peeling", acid: "aha",
+    chains: ["dm", "douglas", "sephora"], prices: { dm: 11.95, douglas: 12.90, sephora: 12.90 },
+    skin: ["normal", "mischhaut", "trocken", "fettig"], concerns: ["pigmentflecken", "falten", "trockenheit"], tags: ["aktiv"], time: "abends" },
+);
+
+// ---------- Haarpflege ----------
+// hair.types: glatt | wellig | lockig | kraus   hair.thick: fein | mittel | dick
+// hair.scalp: fettig | normal | trocken | schuppen   hair.goals: volumen, feuchtigkeit, reparatur, glanz, locken, frizz, farbe, kopfhaut, dichte
+// hair.color: true = besonders für gefärbtes/blondiertes Haar
+const H = (types, thick, scalp, goals, extra = {}) => ({ types, thick, scalp, goals, ...extra });
+const ALL_TYPES = ["glatt", "wellig", "lockig", "kraus"];
+PRODUCTS.push(
+  { id: "balea-volumen-shampoo", area: "haar", brand: "Balea", name: "Volumen Shampoo 300 ml", category: "shampoo",
+    chains: ["dm"], prices: { dm: 0.95 }, hair: H(["glatt", "wellig"], ["fein"], ["fettig", "normal"], ["volumen"]), tags: [] },
+  { id: "fructis-aloe-shampoo", area: "haar", brand: "Garnier Fructis", name: "Hair Food Aloe Vera Shampoo 350 ml", category: "shampoo",
+    chains: ["dm", "rossmann"], prices: { dm: 4.45, rossmann: 4.49 }, hair: H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["feuchtigkeit", "glanz"]), tags: [] },
+  { id: "balea-oilrepair-shampoo", area: "haar", brand: "Balea Professional", name: "Oil Repair Intensiv Shampoo 250 ml", category: "shampoo",
+    chains: ["dm"], prices: { dm: 2.95 }, hair: H(ALL_TYPES, ["mittel", "dick"], ["normal", "trocken"], ["reparatur", "feuchtigkeit"]), tags: [] },
+  { id: "cantu-shampoo", area: "haar", brand: "Cantu", name: "Shea Butter Sulfate-Free Cleansing Cream Shampoo", category: "shampoo",
+    chains: ["dm", "rossmann"], prices: { dm: 7.95, rossmann: 7.99 }, hair: H(["lockig", "kraus", "wellig"], ["mittel", "dick"], ["normal", "trocken"], ["locken", "feuchtigkeit", "frizz"]), tags: ["sulfatfrei"] },
+  { id: "hs-classic", area: "haar", brand: "Head & Shoulders", name: "Classic Clean Anti-Schuppen Shampoo 300 ml", category: "shampoo",
+    chains: ["dm", "rossmann"], prices: { dm: 4.95, rossmann: 4.99 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["schuppen"], ["kopfhaut"]), tags: [] },
+  { id: "olaplex-4", area: "haar", brand: "Olaplex", name: "No. 4 Bond Maintenance Shampoo 250 ml", category: "shampoo",
+    chains: ["douglas"], prices: { douglas: 29.95 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "trocken"], ["reparatur", "farbe"], { color: true }), tags: ["sulfatfrei"] },
+  { id: "johnfrieda-silber", area: "haar", brand: "John Frieda", name: "Sheer Blonde Go Blonder Violett-Shampoo", category: "shampoo",
+    chains: ["dm", "rossmann", "douglas"], prices: { dm: 7.95, rossmann: 7.99, douglas: 9.99 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "fettig"], ["farbe"], { color: true, blondOnly: true }), tags: [] },
+  { id: "alpecin-c1", area: "haar", brand: "Alpecin", name: "Coffein-Shampoo C1 250 ml", category: "shampoo",
+    chains: ["dm", "rossmann"], prices: { dm: 7.45, rossmann: 7.49 }, hair: H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["dichte", "kopfhaut"]), tags: [] },
+
+  { id: "pantene-repair-spuelung", area: "haar", brand: "Pantene Pro-V", name: "Repair & Care Spülung 200 ml", category: "spuelung",
+    chains: ["dm", "rossmann"], prices: { dm: 3.95, rossmann: 3.99 }, hair: H(["glatt", "wellig"], ["mittel", "dick"], ["normal", "trocken", "fettig"], ["reparatur", "glanz"]), tags: [] },
+  { id: "elvital-dream-spuelung", area: "haar", brand: "L'Oréal Elvital", name: "Dream Length Spülung 200 ml", category: "spuelung",
+    chains: ["dm", "rossmann"], prices: { dm: 3.45, rossmann: 3.49 }, hair: H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["reparatur", "glanz"]), tags: [] },
+  { id: "balea-leicht-spuelung", area: "haar", brand: "Balea", name: "Volumen Spülung leicht 300 ml", category: "spuelung",
+    chains: ["dm"], prices: { dm: 0.95 }, hair: H(["glatt", "wellig"], ["fein"], ["fettig", "normal"], ["volumen"]), tags: ["leicht"] },
+  { id: "cantu-conditioner", area: "haar", brand: "Cantu", name: "Shea Butter Hydrating Cream Conditioner", category: "spuelung",
+    chains: ["dm", "rossmann"], prices: { dm: 7.95, rossmann: 7.99 }, hair: H(["lockig", "kraus", "wellig"], ["mittel", "dick"], ["normal", "trocken"], ["locken", "feuchtigkeit", "frizz"]), tags: [] },
+
+  { id: "fructis-papaya-maske", area: "haar", brand: "Garnier Fructis", name: "Hair Food Papaya 3in1 Maske 390 ml", category: "maske",
+    chains: ["dm", "rossmann"], prices: { dm: 6.95, rossmann: 6.99 }, hair: H(ALL_TYPES, ["mittel", "dick"], ["normal", "trocken", "fettig"], ["reparatur", "feuchtigkeit"]), tags: [] },
+  { id: "olaplex-3", area: "haar", brand: "Olaplex", name: "No. 3 Hair Perfector 100 ml", category: "maske",
+    chains: ["dm", "douglas"], prices: { dm: 29.95, douglas: 29.95 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "trocken", "fettig"], ["reparatur", "farbe"], { color: true }), tags: [] },
+  { id: "k18-mask", area: "haar", brand: "K18", name: "Leave-in Molecular Repair Hair Mask 15 ml", category: "maske",
+    chains: ["douglas", "sephora"], prices: { douglas: 32.00, sephora: 32.00 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "trocken", "fettig"], ["reparatur", "farbe"], { color: true }), tags: [] },
+
+  { id: "cantu-leavein", area: "haar", brand: "Cantu", name: "Shea Butter Leave-In Conditioning Repair Cream", category: "leavein",
+    chains: ["dm", "rossmann"], prices: { dm: 8.95, rossmann: 8.99 }, hair: H(["lockig", "kraus"], ["mittel", "dick"], ["normal", "trocken"], ["locken", "feuchtigkeit", "frizz"]), tags: [] },
+  { id: "moroccanoil-treatment", area: "haar", brand: "Moroccanoil", name: "Treatment Haaröl 100 ml", category: "leavein",
+    chains: ["douglas", "sephora"], prices: { douglas: 41.95, sephora: 41.95 }, hair: H(ALL_TYPES, ["mittel", "dick"], ["normal", "trocken"], ["glanz", "frizz", "feuchtigkeit"]), tags: [] },
+  { id: "gisou-oil", area: "haar", brand: "Gisou", name: "Honey Infused Hair Oil 50 ml", category: "leavein",
+    chains: ["sephora"], prices: { sephora: 49.00 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "trocken"], ["glanz", "frizz"]), tags: [] },
+  { id: "elvital-leavein", area: "haar", brand: "L'Oréal Elvital", name: "Dream Length Wonder Water Leave-in", category: "leavein",
+    chains: ["dm", "rossmann"], prices: { dm: 5.95, rossmann: 5.99 }, hair: H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["glanz", "reparatur"]), tags: ["leicht"] },
+
+  { id: "gliss-hitzeschutz", area: "haar", brand: "Gliss", name: "Hitzeschutz-Spray Ultimate Repair 150 ml", category: "hitzeschutz",
+    chains: ["dm", "rossmann"], prices: { dm: 4.95, rossmann: 4.99 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "trocken", "fettig", "schuppen"], ["reparatur"]), tags: [] },
+  { id: "ghd-heatprotect", area: "haar", brand: "ghd", name: "Bodyguard Hitzeschutzspray 120 ml", category: "hitzeschutz",
+    chains: ["douglas"], prices: { douglas: 19.95 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "trocken", "fettig", "schuppen"], ["glanz"]), tags: [] },
+
+  { id: "batiste-trocken", area: "haar", brand: "Batiste", name: "Trockenshampoo Original 200 ml", category: "styling",
+    chains: ["dm", "rossmann"], prices: { dm: 4.45, rossmann: 4.49 }, hair: H(["glatt", "wellig"], ["fein", "mittel"], ["fettig"], ["volumen"]), tags: [] },
+  { id: "briogeo-scalp", area: "haar", brand: "Briogeo", name: "Scalp Revival Charcoal + Coconut Oil Micro-Exfoliating Shampoo", category: "kopfhaut",
+    chains: ["sephora"], prices: { sephora: 39.00 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["fettig", "schuppen", "trocken"], ["kopfhaut"]), tags: [] },
+  { id: "balea-kopfhaut-serum", area: "haar", brand: "Balea", name: "Kopfhaut-Serum beruhigend 50 ml", category: "kopfhaut",
+    chains: ["dm"], prices: { dm: 3.95 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["trocken", "schuppen"], ["kopfhaut"]), tags: [] },
 );
 
 const POPULAR = ["cerave-creme", "to-niacinamide", "lrp-uvmune", "rare-blush", "balea-hyaluron"];

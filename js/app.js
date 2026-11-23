@@ -15,6 +15,8 @@
   const svg = (d, cls = "ic") => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
   const PIN = svg('<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>', "ic sm");
   const SUN = svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>');
+  const DROP = svg('<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>');
+  const CAL = svg('<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>');
   const MOON = svg('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>');
 
   // ---------- State ----------
@@ -185,7 +187,7 @@
     const words = n.split(/\s+/);
     return PRODUCTS
       .map((p) => {
-        const hay = norm(`${p.brand} ${p.name} ${p.category}`);
+        const hay = norm(`${p.brand} ${p.name} ${CAT_LABEL[p.category] || p.category} ${p.area === "haar" ? "haare haar" : ""}`);
         if (!words.every((w) => hay.includes(w))) return null;
         const score = norm(p.brand).startsWith(n) ? 0 : hay.startsWith(n) ? 1 : 2;
         return { p, score };
@@ -333,6 +335,34 @@
     ).join("");
   }
 
+  // ---------- Stöbern nach Kategorie ----------
+  const CAT_LABEL = {
+    reinigung: "Reinigung", serum: "Wirkstoff-Serum", feuchtigkeit: "Feuchtigkeitsserum", peeling: "Peeling", retinoid: "Vitamin A",
+    pflege: "Gesichtscreme", sonnenschutz: "Sonnenschutz", makeup: "Make-up",
+    shampoo: "Shampoo", spuelung: "Spülung", maske: "Haarkur", leavein: "Leave-in und Öl", hitzeschutz: "Hitzeschutz", styling: "Styling", kopfhaut: "Kopfhaut",
+  };
+  const BROWSE = [
+    { key: "haut", label: "Hautpflege", match: (p) => !p.area && p.category !== "makeup" },
+    { key: "makeup", label: "Make-up", match: (p) => p.category === "makeup" },
+    { key: "haar", label: "Haare", match: (p) => p.area === "haar" },
+  ];
+  let browseKey = "haut";
+  function renderBrowse() {
+    $("#browse-tabs").innerHTML = BROWSE.map((b) =>
+      `<button type="button" role="tab" aria-selected="${b.key === browseKey}" class="${b.key === browseKey ? "on" : ""}" data-browse="${b.key}">${esc(b.label)}</button>`).join("");
+    const group = BROWSE.find((b) => b.key === browseKey);
+    const items = PRODUCTS.filter(group.match);
+    const cats = [...new Set(Object.keys(CAT_LABEL).filter((c) => items.some((p) => p.category === c)))];
+    $("#browse-list").innerHTML = cats.map((c) => `
+      <li class="browse-group"><span class="browse-cat">${esc(CAT_LABEL[c])}</span>
+        <ul>${items.filter((p) => p.category === c).map((p) => `
+          <li><button type="button" class="browse-item" data-pick="${p.id}">
+            <span><b>${esc(p.brand)}</b> ${esc(p.name)}</span>
+            <span class="browse-price">ab ${euro(minPrice(p))}</span>
+          </button></li>`).join("")}</ul>
+      </li>`).join("");
+  }
+
   function render() {
     const rows = computeRows();
     renderFilters();
@@ -341,7 +371,7 @@
     updateMarkers(rows);
   }
 
-  // ---------- Haut-Check ----------
+  // ---------- Gemeinsames für Haut- und Haar-Check ----------
   function season(d = new Date()) {
     const m = d.getMonth() + 1;
     if (m === 12 || m <= 2) return "winter";
@@ -350,37 +380,148 @@
     return "herbst";
   }
   const SEASON_NAME = { winter: "Winter", fruehling: "Frühling", sommer: "Sommer", herbst: "Herbst" };
-  const SEASON_TIP = {
+
+  const nearBonus = (p) => Math.min(STORES.filter((st) => p.chains.includes(st.chain) && km(state.user, st) < 4)
+    .map((st) => stockFor(st, p)).filter((x) => x.status !== "out").length, 4) * 0.25;
+  const minPrice = (p) => Math.min(...Object.values(p.prices));
+
+  function nearestAvailable(p) {
+    return STORES.filter((s) => p.chains.includes(s.chain))
+      .map((s) => ({ s, st: stockFor(s, p), d: km(state.user, s) }))
+      .filter((x) => x.st.status !== "out")
+      .sort((x, y) => x.d - y.d)[0];
+  }
+
+  // Ein Schritt der Routine. r = { p, why, note, relaxed } oder { plain: "Text" }
+  function stepHtml(label, r, i) {
+    if (!r) return `<li class="step"><span class="step-n">${i + 1}</span><div class="step-body"><div class="step-cat">${esc(label)}</div><span class="muted">Kein passendes Produkt in deinem Budget gefunden.</span></div></li>`;
+    if (r.plain) return `<li class="step"><span class="step-n">${i + 1}</span><div class="step-body"><div class="step-cat">${esc(label)}</div><div class="step-prod">${esc(r.plain)}</div>${r.note ? `<div class="step-note">${esc(r.note)}</div>` : ""}</div></li>`;
+    const near = nearestAvailable(r.p);
+    const where = near ? `${PIN}${esc(CHAINS[near.s.chain].name)} ${esc(near.s.area)} · ${fmtKm(near.d)}` : "Gerade nirgends vorrätig";
+    return `
+      <li class="step">
+        <span class="step-n">${i + 1}</span>
+        <div class="step-body">
+          <div class="step-cat">${esc(label)}</div>
+          <div class="step-prod"><b>${esc(r.p.brand)}</b> ${esc(r.p.name)}</div>
+          ${r.note ? `<div class="step-note">${esc(r.note)}</div>` : ""}
+          ${r.why && r.why.length ? `<div class="step-why">${esc(r.why.join(" · "))}</div>` : ""}
+          ${r.relaxed ? `<div class="step-why warn">Enthält möglicherweise Duftstoffe. Im Budget gab es keine parfümfreie Alternative.</div>` : ""}
+          <div class="step-foot">
+            <span class="step-where">${where}</span>
+            <button type="button" class="ghost-btn" data-find="${r.p.id}">Finden</button>
+          </div>
+        </div>
+      </li>`;
+  }
+
+  const listJoin = (arr) => arr.join(" und ").replace(/ und (?=.* und )/g, ", ");
+
+  // Fragebogen-Baustein: eine Frage pro Bildschirm, Fortschritt, Zurück, Ergebnis
+  function createQuiz(prefix, questions, onDone) {
+    const answers = {};
+    let idx = 0;
+    const el = (n) => $(`#${prefix}-${n}`);
+    const show = (view) => { ["intro", "quiz", "result"].forEach((v) => { el(v).hidden = v !== view; }); window.scrollTo({ top: 0 }); };
+
+    function render(animate = true) {
+      const q = questions[idx];
+      const selected = q.multi ? new Set(answers[q.key] || []) : answers[q.key];
+      el("progress").style.width = `${((idx + 1) / questions.length) * 100}%`;
+      el("count").textContent = `Frage ${idx + 1} von ${questions.length}`;
+      if (animate) {
+        el("body").innerHTML = `
+          <h2 class="q-title" id="${prefix}-qtitle">${esc(q.title)}</h2>
+          ${q.hint ? `<p class="q-hint">${esc(q.hint)}</p>` : ""}
+          <div class="options ${q.multi ? "multi" : ""}" role="${q.multi ? "group" : "radiogroup"}" aria-labelledby="${prefix}-qtitle">
+            ${q.options.map((o) => `<button type="button" class="option" data-v="${o.v}" role="${q.multi ? "checkbox" : "radio"}" aria-checked="false">
+                <span class="o-text"><span class="o-label">${esc(o.l)}</span>${o.d ? `<span class="o-desc">${esc(o.d)}</span>` : ""}</span>
+                <span class="o-check" aria-hidden="true"></span>
+              </button>`).join("")}
+          </div>`;
+        el("body").classList.remove("enter"); void el("body").offsetWidth; el("body").classList.add("enter");
+      }
+      el("body").querySelectorAll(".option").forEach((b) => {
+        const on = q.multi ? selected.has(b.dataset.v) : selected === b.dataset.v;
+        b.classList.toggle("on", on); b.setAttribute("aria-checked", on);
+      });
+      const last = idx === questions.length - 1;
+      el("next").hidden = !q.multi && !selected;
+      el("next").textContent = last ? "Ergebnis anzeigen" : q.multi && !selected.size ? "Überspringen" : "Weiter";
+      el("back").textContent = idx === 0 ? "Abbrechen" : "Zurück";
+    }
+    const next = () => {
+      if (idx < questions.length - 1) { idx++; render(); }
+      else { el("result").innerHTML = onDone(answers) + `<button type="button" class="secondary-btn" data-restart>Neu starten</button>`; show("result"); }
+    };
+
+    el("total").textContent = questions.length;
+    el("start").addEventListener("click", () => { idx = 0; show("quiz"); render(); });
+    el("back").addEventListener("click", () => { if (idx === 0) { show("intro"); return; } idx--; render(); });
+    el("next").addEventListener("click", next);
+    el("body").addEventListener("click", (e) => {
+      const btn = e.target.closest(".option");
+      if (!btn) return;
+      const q = questions[idx];
+      if (q.multi) {
+        const set = new Set(answers[q.key] || []);
+        set.has(btn.dataset.v) ? set.delete(btn.dataset.v) : set.add(btn.dataset.v);
+        answers[q.key] = [...set];
+        render(false);
+      } else {
+        answers[q.key] = btn.dataset.v;
+        render(false);
+        setTimeout(next, 220);
+      }
+    });
+    el("result").addEventListener("click", (e) => {
+      const find = e.target.closest("[data-find]");
+      if (find) { switchTab("tab-search"); selectProduct(find.dataset.find); return; }
+      if (e.target.closest("[data-restart]")) { Object.keys(answers).forEach((k) => delete answers[k]); show("intro"); }
+    });
+  }
+
+  // =====================================================================
+  // HAUT-CHECK
+  // Die Routine-Logik orientiert sich an Pflegegrundsätzen, die der Skinfluencer
+  // Leon (@xskincare) öffentlich teilt (Quelle: Presseberichte, siehe docs/KONZEPT.md):
+  //  - Hauttyp-Test: 60 Minuten nach dem Waschen ohne Creme fühlen
+  //  - Morgens: Niacinamid- oder Vitamin-C-Serum, dann Feuchtigkeit, Creme, LSF
+  //  - Feuchtigkeit: Glycerin/Panthenol oft wirksamer als nur Hyaluron
+  //  - AHA und BHA an unterschiedlichen Abenden im Wechsel
+  //  - Poren: Niacinamid, BHA, Vitamin A – Poren sind normal und nicht "wegzumachen"
+  //  - Gereizte Haut: Routine reduzieren, morgens nur Wasser, keine Säuren/Retinol/Alkohol
+  // =====================================================================
+  const SKIN_SEASON_TIP = {
     winter: "Heizungsluft und Kälte entziehen der Haut Feuchtigkeit. Setz auf reichhaltigere Pflege und vergiss den Sonnenschutz am Morgen trotzdem nicht.",
     herbst: "Die Haut stellt sich auf trockene Heizungsluft um. Leg bei der Feuchtigkeit nach und dosiere Peelings eher sanft.",
-    fruehling: "Die UV-Strahlung steigt schnell an. Trag jetzt wieder konsequent LSF und wechsle zu leichteren Texturen.",
+    fruehling: "Die UV-Strahlung steigt schnell an. Trag jetzt wieder konsequent Sonnenschutz, im frühen Frühjahr reicht oft LSF 30.",
     sommer: "Leichte Texturen, hoher LSF und regelmäßiges Nachcremen. Abends gründlich reinigen, um Sonnencreme und Schweiß zu entfernen.",
   };
-  const CONCERN_LABEL = { unreinheiten: "Unreinheiten", trockenheit: "Trockenheit", roetungen: "Rötungen", glanz: "Glanz", falten: "Fältchen", pigmentflecken: "Pigmentflecken", sonnenschutz: "UV-Schutz" };
+  const CONCERN_LABEL = { unreinheiten: "Unreinheiten", trockenheit: "Trockenheit", roetungen: "Rötungen", glanz: "Glanz & Poren", falten: "Fältchen", pigmentflecken: "Pigmentflecken", sonnenschutz: "UV-Schutz" };
   const SKIN_LABEL = { trocken: "Trockene Haut", fettig: "Fettige Haut", mischhaut: "Mischhaut", normal: "Ausgeglichene Haut" };
   const SKIN_WHY = { trocken: "trockener Haut", fettig: "fettiger Haut", mischhaut: "Mischhaut", normal: "ausgeglichener Haut" };
-  const STEP_LABEL = { abschminken: "Abschminken", reinigung: "Reinigen", serum: "Serum", pflege: "Pflegen", sonnenschutz: "Sonnenschutz" };
 
-  // Fragen des Haut-Checks. single = eine Antwort (springt automatisch weiter), multi = mehrere.
-  const QUESTIONS = [
+  const SKIN_QUESTIONS = [
     { key: "skinType", title: "Wie fühlt sich deine Haut im Laufe des Tages an?", options: [
       { v: "trocken", l: "Trocken", d: "Spannt, wirkt manchmal schuppig" },
       { v: "fettig", l: "Fettig", d: "Glänzt im ganzen Gesicht" },
       { v: "mischhaut", l: "Mischhaut", d: "Stirn, Nase und Kinn glänzen, Wangen sind eher trocken" },
       { v: "normal", l: "Ausgeglichen", d: "Weder besonders trocken noch fettig" } ] },
-    { key: "afterWash", title: "Und eine Stunde nach dem Waschen, ohne Creme?", options: [
-      { v: "spannt", l: "Sie spannt", d: "Ich will sofort eincremen" },
-      { v: "angenehm", l: "Fühlt sich angenehm an", d: "Kein besonderes Gefühl" },
-      { v: "glaenzt", l: "Sie glänzt schon wieder", d: "Vor allem in der T-Zone" } ] },
+    { key: "afterWash", title: "Kleiner Test: Wie fühlt sich deine Haut 60 Minuten nach dem Waschen an, ohne Creme?", options: [
+      { v: "spannt", l: "Sie spannt", d: "Eher trockene Haut" },
+      { v: "angenehm", l: "Angenehm", d: "Eher ausgeglichene Haut" },
+      { v: "tzone", l: "Nur Stirn und Nase glänzen", d: "Eher Mischhaut" },
+      { v: "glaenzt", l: "Sie glänzt überall", d: "Eher fettige Haut" } ] },
     { key: "concerns", multi: true, title: "Woran möchtest du gerade arbeiten?", hint: "Wähle alles, was zutrifft.", options: [
       { v: "unreinheiten", l: "Pickel und Unreinheiten" },
       { v: "trockenheit", l: "Trockene Stellen" },
       { v: "roetungen", l: "Rötungen" },
-      { v: "glanz", l: "Glanz und große Poren" },
+      { v: "glanz", l: "Glanz und sichtbare Poren" },
       { v: "falten", l: "Erste Fältchen" },
-      { v: "pigmentflecken", l: "Pigmentflecken" } ] },
+      { v: "pigmentflecken", l: "Pigmentflecken oder fahler Teint" } ] },
     { key: "sensitive", title: "Reagiert deine Haut empfindlich?", hint: "Zum Beispiel mit Brennen, Jucken oder Rötungen nach neuen Produkten.", options: [
-      { v: "ja", l: "Ja, oft" }, { v: "manchmal", l: "Manchmal" }, { v: "nein", l: "Nein, kaum" } ] },
+      { v: "ja", l: "Ja, sie ist gerade gereizt" }, { v: "manchmal", l: "Manchmal" }, { v: "nein", l: "Nein, kaum" } ] },
     { key: "fragrance", title: "Wie verträgst du Duftstoffe in Pflegeprodukten?", options: [
       { v: "ok", l: "Problemlos" },
       { v: "ohne", l: "Lieber ohne", d: "Wir empfehlen dann nur parfümfreie Produkte" },
@@ -399,139 +540,127 @@
       { v: "stress", l: "Viel Stress", d: "Prüfungen, Job oder Unruhe" } ] },
     { key: "routine", title: "Wie viel Zeit möchtest du in deine Routine stecken?", options: [
       { v: "minimal", l: "So wenig wie möglich", d: "2 bis 3 Schritte" },
-      { v: "normal", l: "Ausgewogen", d: "3 bis 4 Schritte" },
-      { v: "ausfuehrlich", l: "Gerne ausführlich", d: "Ich nehme mir Zeit" } ] },
+      { v: "normal", l: "Ausgewogen", d: "3 bis 5 Schritte" },
+      { v: "ausfuehrlich", l: "Gerne ausführlich", d: "Mit Peelings und Wirkstoffen im Wechsel" } ] },
     { key: "budget", title: "Wie viel möchtest du pro Produkt ausgeben?", options: [
       { v: "15", l: "Bis 15 €" }, { v: "30", l: "Bis 30 €" }, { v: "999", l: "Egal" } ] },
   ];
 
-  const answers = {};
-  let qIndex = 0;
-
-  // Antworten in ein Hautprofil übersetzen
-  function profileFrom(a) {
+  function skinProfile(a) {
     let skinType = a.skinType;
-    if (skinType === "normal" && a.afterWash === "glaenzt") skinType = "mischhaut";
-    if (skinType === "normal" && a.afterWash === "spannt") skinType = "trocken";
+    const test = { spannt: "trocken", tzone: "mischhaut", glaenzt: "fettig" }[a.afterWash];
+    if (skinType === "normal" && test) skinType = test; // der 60-Minuten-Test entscheidet bei "ausgeglichen"
     const weights = {};
     (a.concerns || []).forEach((c) => { weights[c] = 2; });
-    if (a.afterWash === "spannt") weights.trockenheit = Math.max(weights.trockenheit || 0, 1);
-    if (a.afterWash === "glaenzt") weights.glanz = Math.max(weights.glanz || 0, 1);
-    if (a.age === "30" || a.age === "40") weights.falten = Math.max(weights.falten || 0, a.age === "40" ? 1.5 : 1);
-    if (a.outdoor === "viel") weights.pigmentflecken = Math.max(weights.pigmentflecken || 0, 1);
+    const soft = (c, w) => { weights[c] = Math.max(weights[c] || 0, w); };
+    if (a.afterWash === "spannt") soft("trockenheit", 1);
+    if (a.afterWash === "glaenzt" || a.afterWash === "tzone") soft("glanz", 1);
+    if (a.age === "30" || a.age === "40") soft("falten", a.age === "40" ? 1.5 : 1);
+    if (a.outdoor === "viel") soft("pigmentflecken", 1);
     return {
-      skinType,
-      weights,
+      skinType, weights,
       sensitive: a.sensitive,
+      irritated: a.sensitive === "ja",
       noFragrance: a.fragrance === "ohne" || a.sensitive === "ja",
       noActives: a.sensitive === "ja" || a.age === "u20",
       budget: Number(a.budget),
-      routine: a.routine,
     };
   }
 
-  function scoreProduct(p, pr, slot, sea, strict) {
-    if (Math.min(...Object.values(p.prices)) > pr.budget) return null;
+  function skinScore(p, pr, slot, sea, strict) {
+    if (minPrice(p) > pr.budget) return null;
     if (p.time !== "beides" && p.time !== slot) return null;
     const ff = p.tags.includes("parfuemfrei");
     if (strict && pr.noFragrance && !ff) return null;
-    if (strict && pr.noActives && p.tags.includes("aktiv")) return null;
+    if (pr.noActives && p.tags.includes("aktiv")) return null;
     let s = p.time === slot ? 1 : 0;
     const why = [];
     if (p.skin.includes(pr.skinType)) { s += 3; why.push(`passt zu ${SKIN_WHY[pr.skinType]}`); }
     const hits = p.concerns.filter((c) => pr.weights[c]);
     hits.forEach((c) => { s += pr.weights[c]; });
     if (hits.length) why.push(hits.map((c) => CONCERN_LABEL[c]).join(", "));
+    if (p.tags.includes("glycerin")) { s += 2; why.push("mit Glycerin für tiefe Feuchtigkeit"); }
     if (pr.sensitive === "ja") s += ff ? 3 : -3;
     if (pr.sensitive === "manchmal" && ff) s += 1;
     if (ff && (pr.noFragrance || pr.sensitive !== "nein")) why.push("parfümfrei");
     if ((sea === "winter" || sea === "herbst") && p.tags.includes("reichhaltig") && pr.skinType !== "fettig") { s += 1.5; why.push("reichhaltig für die Heizungssaison"); }
     if ((sea === "sommer" || sea === "fruehling") && p.tags.includes("leicht")) { s += 1.5; why.push("leichte Textur"); }
-    // Verfügbarkeit in der Nähe leicht bevorzugen
-    const near = STORES.filter((st) => p.chains.includes(st.chain) && km(state.user, st) < 4)
-      .map((st) => stockFor(st, p)).filter((x) => x.status !== "out").length;
-    s += Math.min(near, 4) * 0.25;
+    s += nearBonus(p);
     return { p, s, why, relaxed: !strict && pr.noFragrance && !ff };
   }
 
-  function pick(filter, slot, pr, sea, exclude = new Set()) {
-    const run = (strict) => PRODUCTS.filter((p) => filter(p) && !exclude.has(p.id))
-      .map((p) => scoreProduct(p, pr, slot, sea, strict)).filter(Boolean).sort((x, y) => y.s - x.s)[0];
+  function skinPick(filter, slot, pr, sea, exclude = new Set()) {
+    const run = (strict) => PRODUCTS.filter((p) => !p.area && filter(p) && !exclude.has(p.id))
+      .map((p) => skinScore(p, pr, slot, sea, strict)).filter(Boolean).sort((x, y) => y.s - x.s)[0];
     return run(true) || run(false) || null;
   }
-  const inCat = (cat) => (p) => p.category === cat;
+  const cat = (c) => (p) => p.category === c;
 
-  function nearestAvailable(p) {
-    return STORES.filter((s) => p.chains.includes(s.chain))
-      .map((s) => ({ s, st: stockFor(s, p), d: km(state.user, s) }))
-      .filter((x) => x.st.status !== "out")
-      .sort((x, y) => x.d - y.d)[0];
-  }
-
-  function buildRoutine(a) {
+  function skinResult(a) {
     const sea = season();
-    const pr = profileFrom(a);
-    const minimal = pr.routine === "minimal", full = pr.routine === "ausfuehrlich";
-    const hasConcerns = Object.keys(pr.weights).length > 0;
+    const pr = skinProfile(a);
+    const minimal = a.routine === "minimal", full = a.routine === "ausfuehrlich";
+    const has = (c) => !!pr.weights[c];
     const morning = [], evening = [];
+    const used = new Set();
+    const add = (list, label, r) => { if (r) { list.push([label, r]); if (r.p) used.add(r.p.id); } };
 
-    if (!minimal) morning.push(["reinigung", pick(inCat("reinigung"), "morgens", pr, sea)]);
-    const mSerum = !minimal && (hasConcerns || full) ? pick(inCat("serum"), "morgens", pr, sea) : null;
-    if (mSerum) morning.push(["serum", mSerum]);
-    morning.push(["pflege", pick(inCat("pflege"), "morgens", pr, sea)]);
-    morning.push(["sonnenschutz", pick(inCat("sonnenschutz"), "morgens", pr, sea)]);
+    // Morgens
+    if (pr.irritated) add(morning, "Reinigen", { plain: "Nur lauwarmes Wasser", note: "Bei gereizter Haut morgens auf Reinigungsprodukte verzichten." });
+    else if (!minimal) add(morning, "Reinigen", skinPick((p) => p.category === "reinigung" && !p.tags.includes("aktiv") && !p.remover, "morgens", pr, sea));
+    if (!pr.irritated && (!minimal || Object.keys(pr.weights).length)) {
+      const wantVitC = has("pigmentflecken") && !has("unreinheiten") && !has("glanz");
+      const serum = skinPick((p) => p.category === "serum" && (wantVitC ? /Vitamin C/i.test(p.name) : !/Vitamin C/i.test(p.name)), "morgens", pr, sea)
+        || skinPick(cat("serum"), "morgens", pr, sea);
+      if (serum) serum.note = /Vitamin C/i.test(serum.p.name) ? "Vitamin C morgens für einen frischeren Teint" : "Niacinamid verfeinert Poren und beruhigt";
+      add(morning, "Wirkstoff-Serum", serum);
+    }
+    if (!minimal) add(morning, "Feuchtigkeit", skinPick(cat("feuchtigkeit"), "morgens", pr, sea));
+    add(morning, "Pflegen", skinPick(cat("pflege"), "morgens", pr, sea));
+    add(morning, "Sonnenschutz", skinPick(cat("sonnenschutz"), "morgens", pr, sea));
 
+    // Abends
     const doubleCleanse = a.makeup === "taeglich" || (a.makeup === "manchmal" && full);
     let remover = null;
-    if (doubleCleanse) {
-      remover = pick((p) => p.remover, "abends", pr, sea);
-      if (remover) evening.push(["abschminken", remover]);
+    if (doubleCleanse) { remover = skinPick((p) => p.remover, "abends", pr, sea); add(evening, "Abschminken", remover); }
+    add(evening, "Reinigen", skinPick((p) => p.category === "reinigung" && !(remover && p.remover) && !p.tags.includes("aktiv"), "abends", pr, sea));
+    let exfoliants = [];
+    if (!minimal && !pr.noActives) {
+      const wantBHA = has("unreinheiten") || has("glanz");
+      const wantAHA = has("pigmentflecken") || has("falten") || has("trockenheit");
+      const bha = wantBHA ? skinPick((p) => p.category === "peeling" && p.acid === "bha", "abends", pr, sea) : null;
+      const aha = wantAHA && (full || !bha) ? skinPick((p) => p.category === "peeling" && p.acid === "aha", "abends", pr, sea) : null;
+      if (bha && aha) { bha.note = "2–3 Abende pro Woche, im Wechsel mit dem AHA"; aha.note = "An anderen Abenden als das BHA, nie zusammen"; }
+      else if (bha) bha.note = "2–3 Abende pro Woche";
+      else if (aha) aha.note = "2–3 Abende pro Woche";
+      if (bha) { add(evening, "BHA-Peeling", bha); exfoliants.push(bha); }
+      if (aha) { add(evening, "AHA-Peeling", aha); exfoliants.push(aha); }
+      if ((has("falten") || (full && has("glanz"))) && (full || !exfoliants.length)) {
+        const ret = skinPick(cat("retinoid"), "abends", pr, sea);
+        if (ret) { ret.note = exfoliants.length ? "An peelingfreien Abenden, langsam steigern" : "Mit 2 Abenden pro Woche starten"; add(evening, "Vitamin A", ret); exfoliants.push(ret); }
+      }
     }
-    evening.push(["reinigung", pick((p) => p.category === "reinigung" && !(remover && p.remover), "abends", pr, sea)]);
-    if (!minimal) {
-      const eSerum = pick(inCat("serum"), "abends", pr, sea, new Set(mSerum ? [mSerum.p.id] : []));
-      if (eSerum) evening.push(["serum", eSerum]);
-    }
-    evening.push(["pflege", pick(inCat("pflege"), "abends", pr, sea)]);
+    if (!minimal) add(evening, "Feuchtigkeit", skinPick(cat("feuchtigkeit"), "abends", pr, sea));
+    add(evening, "Pflegen", skinPick(cat("pflege"), "abends", pr, sea));
 
-    const stepHtml = ([cat, r], i) => {
-      if (!r) return `<li class="step"><span class="step-n">${i + 1}</span><div class="step-body"><div class="step-cat">${STEP_LABEL[cat]}</div><span class="muted">Kein passendes Produkt in deinem Budget gefunden.</span></div></li>`;
-      const near = nearestAvailable(r.p);
-      const where = near ? `${PIN}${esc(CHAINS[near.s.chain].name)} ${esc(near.s.area)} · ${fmtKm(near.d)}` : "Gerade nirgends vorrätig";
-      return `
-        <li class="step">
-          <span class="step-n">${i + 1}</span>
-          <div class="step-body">
-            <div class="step-cat">${STEP_LABEL[cat]}</div>
-            <div class="step-prod"><b>${esc(r.p.brand)}</b> ${esc(r.p.name)}</div>
-            ${r.why.length ? `<div class="step-why">${esc(r.why.join(" · "))}</div>` : ""}
-            ${r.relaxed ? `<div class="step-why warn">Enthält möglicherweise Duftstoffe. Im Budget gab es keine parfümfreie Alternative.</div>` : ""}
-            <div class="step-foot">
-              <span class="step-where">${where}</span>
-              <button type="button" class="ghost-btn" data-find="${r.p.id}">Finden</button>
-            </div>
-          </div>
-        </li>`;
-    };
-
-    const all = [...morning, ...evening].map(([, r]) => r).filter(Boolean);
     const tips = [];
+    if (pr.irritated) tips.push("Gereizte Haut braucht weniger, nicht mehr: keine Säuren, kein Retinol, keine alkoholhaltigen Produkte. Gib der Haut 2 bis 6 Wochen und führe Wirkstoffe danach langsam wieder ein.");
+    if (exfoliants.length) tips.push("Benutze AHA, BHA und Vitamin A nicht am selben Abend. Wechsle sie ab und trag morgens immer Sonnenschutz.");
+    if (has("glanz")) tips.push("Poren sind normal und lassen sich nicht wegmachen. Niacinamid, BHA und Vitamin A können sie aber sichtbar verfeinern.");
     if (doubleCleanse) tips.push("Abends doppelt reinigen: erst mit Mizellenwasser Make-up und Sonnencreme lösen, dann mit dem Waschgel nachreinigen.");
-    if (all.some((r) => r.p.tags.includes("aktiv"))) tips.push("Starte mit neuen Wirkstoffen wie Retinol oder BHA langsam, an 2 bis 3 Abenden pro Woche. Morgens dann immer LSF benutzen.");
     if (a.outdoor === "viel") tips.push("Du bist viel draußen. Trag den Sonnenschutz alle zwei Stunden neu auf, auch im Winter.");
     if (a.sleep === "wenig") tips.push("Zu wenig Schlaf zeigt sich oft als fahle Haut und Augenringe. Feuchtigkeit hilft kurzfristig, ausreichend Schlaf hilft langfristig mehr.");
-    if (a.sleep === "stress") tips.push("Stress kann Unreinheiten und Rötungen verstärken. Bleib bei einer einfachen Routine und probier nicht zu viele neue Produkte gleichzeitig aus.");
+    if (a.sleep === "stress") tips.push("Stress kann Unreinheiten und Rötungen verstärken. Probier nicht zu viele neue Produkte gleichzeitig aus.");
     if (pr.weights.roetungen) tips.push("Wenn Rötungen länger anhalten, lass sie am besten dermatologisch abklären.");
-    if (minimal) tips.push("Deine Routine ist bewusst kurz gehalten. Wenn du mehr willst, kannst du später ein Serum ergänzen.");
 
     const explicit = (a.concerns || []).map((c) => CONCERN_LABEL[c]);
     const focus = (explicit.length ? explicit : Object.keys(pr.weights).map((c) => CONCERN_LABEL[c])).slice(0, 3);
-    const sensLabel = { ja: "Empfindlich", manchmal: "Leicht empfindlich", nein: "Robust" }[pr.sensitive];
+    const sensLabel = { ja: "Gerade gereizt", manchmal: "Leicht empfindlich", nein: "Robust" }[pr.sensitive];
 
-    $("#skin-result").innerHTML = `
+    return `
       <div class="result-head">
         <p class="eyebrow">Dein Ergebnis</p>
-        <h2>${esc(SKIN_LABEL[pr.skinType])}${focus.length ? `, Fokus auf ${esc(focus.join(" und ").replace(/ und (?=.* und )/, ", "))}` : ""}</h2>
+        <h2>${esc(SKIN_LABEL[pr.skinType])}${focus.length ? `, Fokus auf ${esc(listJoin(focus))}` : ""}</h2>
         <div class="profile-tags">
           <span>${esc(sensLabel)}</span>
           ${pr.noFragrance ? "<span>Parfümfrei</span>" : ""}
@@ -539,100 +668,188 @@
           <span>${pr.budget > 100 ? "Ohne Budgetgrenze" : `Bis ${pr.budget} € pro Produkt`}</span>
         </div>
       </div>
-      <div class="season-tip"><b>${esc(SEASON_NAME[sea])}:</b> ${SEASON_TIP[sea]}</div>
+      <div class="season-tip"><b>${esc(SEASON_NAME[sea])}:</b> ${SKIN_SEASON_TIP[sea]}</div>
       <div class="routine-cols">
-        <div class="routine-col"><h3>${SUN}Morgens</h3><ol>${morning.map(stepHtml).join("")}</ol></div>
-        <div class="routine-col"><h3>${MOON}Abends</h3><ol>${evening.map(stepHtml).join("")}</ol></div>
+        <div class="routine-col"><h3>${SUN}Morgens</h3><ol>${morning.map(([l, r], i) => stepHtml(l, r, i)).join("")}</ol></div>
+        <div class="routine-col"><h3>${MOON}Abends</h3><ol>${evening.map(([l, r], i) => stepHtml(l, r, i)).join("")}</ol></div>
       </div>
       ${tips.length ? `<div class="tips"><h3>Gut zu wissen</h3><ul>${tips.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>` : ""}
-      <p class="disclaimer">Diese Empfehlungen ersetzen keine ärztliche oder dermatologische Beratung.</p>
-      <button type="button" class="secondary-btn" id="quiz-restart">Haut-Check neu starten</button>`;
-    showSkinView("result");
+      <p class="disclaimer">Die Empfehlungen orientieren sich an Pflegegrundsätzen, die der Skinfluencer Leon (@xskincare) öffentlich teilt. Es besteht keine Kooperation. Sie ersetzen keine ärztliche oder dermatologische Beratung.</p>`;
   }
 
-  // ---------- Fragebogen (Schritt für Schritt) ----------
-  function showSkinView(view) {
-    ["intro", "quiz", "result"].forEach((v) => { $(`#skin-${v}`).hidden = v !== view; });
-    window.scrollTo({ top: 0 });
+  // =====================================================================
+  // HAAR-CHECK
+  // =====================================================================
+  const HAIR_GOAL_LABEL = { volumen: "Volumen", feuchtigkeit: "Feuchtigkeit", reparatur: "Reparatur", glanz: "Glanz", locken: "definierte Locken", frizz: "weniger Frizz", farbe: "Farbschutz", kopfhaut: "Kopfhautpflege", dichte: "Fülle" };
+  const HAIR_TYPE_LABEL = { glatt: "Glattes Haar", wellig: "Welliges Haar", lockig: "Lockiges Haar", kraus: "Krauses Haar" };
+  const HAIR_SEASON_TIP = {
+    winter: "Heizungsluft und Mützen machen Haare trocken und elektrisch. Gönn den Längen öfter eine Kur und geh nur mit trockenen Haaren raus.",
+    herbst: "Im Herbst fallen oft etwas mehr Haare aus, das ist meist normal. Pflege die Kopfhaut sanft und die Längen mit etwas mehr Feuchtigkeit.",
+    fruehling: "Im Frühling ist ein guter Moment für einen Spitzenschnitt, um Winterspliss loszuwerden.",
+    sommer: "Sonne, Salz- und Chlorwasser trocknen das Haar aus. Nach dem Baden ausspülen und Leave-in mit UV-Schutz nutzen.",
+  };
+
+  const HAIR_QUESTIONS = [
+    { key: "hairType", title: "Wie fallen deine Haare, wenn sie lufttrocknen?", options: [
+      { v: "glatt", l: "Glatt", d: "Fallen gerade, ohne Wellen" },
+      { v: "wellig", l: "Wellig", d: "Leichte S-Wellen" },
+      { v: "lockig", l: "Lockig", d: "Deutliche Locken oder Korkenzieher" },
+      { v: "kraus", l: "Kraus", d: "Sehr enge Locken, Coils oder Zickzack-Muster" } ] },
+    { key: "thick", title: "Wie dick ist ein einzelnes Haar?", hint: "Reib ein Haar zwischen den Fingern.", options: [
+      { v: "fein", l: "Fein", d: "Kaum zu spüren" },
+      { v: "mittel", l: "Mittel", d: "Gut zu spüren" },
+      { v: "dick", l: "Dick", d: "Fühlt sich kräftig an, fast wie ein Faden" } ] },
+    { key: "scalp", title: "Wie ist deine Kopfhaut?", options: [
+      { v: "fettig", l: "Fettet schnell", d: "Nach 1 bis 2 Tagen strähnig" },
+      { v: "normal", l: "Unauffällig" },
+      { v: "trocken", l: "Trocken", d: "Spannt oder juckt" },
+      { v: "schuppen", l: "Schuppen", d: "Sichtbare Schuppen auf Kopfhaut oder Kleidung" } ] },
+    { key: "lengths", title: "Und wie fühlen sich die Längen und Spitzen an?", options: [
+      { v: "gesund", l: "Weich und gesund" },
+      { v: "trocken", l: "Trocken und strohig" },
+      { v: "spliss", l: "Spliss und Haarbruch" } ] },
+    { key: "color", title: "Sind deine Haare gefärbt oder blondiert?", options: [
+      { v: "natur", l: "Nein, Naturhaar" },
+      { v: "gefaerbt", l: "Gefärbt oder getönt" },
+      { v: "blondiert", l: "Blondiert oder Strähnchen" } ] },
+    { key: "heat", title: "Wie oft benutzt du Föhn, Glätteisen oder Lockenstab?", options: [
+      { v: "taeglich", l: "Fast täglich" }, { v: "manchmal", l: "Ab und zu" }, { v: "nie", l: "Kaum oder nie", d: "Meist lufttrocknen" } ] },
+    { key: "wash", title: "Wie oft wäschst du deine Haare?", options: [
+      { v: "taeglich", l: "Täglich" }, { v: "zwei", l: "Alle 2 bis 3 Tage" }, { v: "selten", l: "Einmal pro Woche oder seltener" } ] },
+    { key: "goals", multi: true, title: "Was wünschst du dir für deine Haare?", hint: "Wähle alles, was zutrifft.", options: [
+      { v: "volumen", l: "Mehr Volumen" },
+      { v: "glanz", l: "Mehr Glanz" },
+      { v: "feuchtigkeit", l: "Mehr Feuchtigkeit" },
+      { v: "frizz", l: "Weniger Frizz" },
+      { v: "locken", l: "Definierte Locken" },
+      { v: "farbe", l: "Farbe länger erhalten oder Gelbstich vermeiden" },
+      { v: "dichte", l: "Meine Haare wirken dünner" } ] },
+    { key: "budget", title: "Wie viel möchtest du pro Produkt ausgeben?", options: [
+      { v: "10", l: "Bis 10 €" }, { v: "30", l: "Bis 30 €" }, { v: "999", l: "Egal" } ] },
+  ];
+
+  function hairProfile(a) {
+    const w = {};
+    (a.goals || []).forEach((g) => { w[g] = 2; });
+    const soft = (g, v) => { w[g] = Math.max(w[g] || 0, v); };
+    if (a.lengths === "trocken") soft("feuchtigkeit", 1.5);
+    if (a.lengths === "spliss") soft("reparatur", 2);
+    if (a.color === "gefaerbt") { soft("farbe", 1.5); soft("reparatur", 0.5); }
+    if (a.color === "blondiert") { soft("reparatur", 2); soft("farbe", 1); }
+    if (a.hairType === "lockig" || a.hairType === "kraus") { soft("locken", 1); soft("frizz", 1); soft("feuchtigkeit", 1); }
+    if (a.heat === "taeglich") soft("reparatur", 1);
+    if (a.scalp === "schuppen") soft("kopfhaut", 3);
+    if (a.scalp === "trocken") soft("kopfhaut", 1.5);
+    if (a.scalp === "fettig" && a.thick === "fein") soft("volumen", 1);
+    return { ...a, w, budget: Number(a.budget) };
   }
 
-  function renderQuestion() {
-    const q = QUESTIONS[qIndex];
-    const total = QUESTIONS.length;
-    const selected = q.multi ? new Set(answers[q.key] || []) : answers[q.key];
-    $("#quiz-progress").style.width = `${((qIndex + 1) / total) * 100}%`;
-    $("#quiz-count").textContent = `Frage ${qIndex + 1} von ${total}`;
-    $("#quiz-body").innerHTML = `
-      <h2 class="q-title" id="q-title">${esc(q.title)}</h2>
-      ${q.hint ? `<p class="q-hint">${esc(q.hint)}</p>` : ""}
-      <div class="options ${q.multi ? "multi" : ""}" role="${q.multi ? "group" : "radiogroup"}" aria-labelledby="q-title">
-        ${q.options.map((o) => {
-          const on = q.multi ? selected.has(o.v) : selected === o.v;
-          return `<button type="button" class="option ${on ? "on" : ""}" data-v="${o.v}" role="${q.multi ? "checkbox" : "radio"}" aria-checked="${on}">
-            <span class="o-text"><span class="o-label">${esc(o.l)}</span>${o.d ? `<span class="o-desc">${esc(o.d)}</span>` : ""}</span>
-            <span class="o-check" aria-hidden="true"></span>
-          </button>`;
-        }).join("")}
-      </div>`;
-    const next = $("#quiz-next");
-    next.hidden = !q.multi && !selected;
-    next.textContent = qIndex === total - 1 ? "Ergebnis anzeigen" : q.multi && !selected.size ? "Überspringen" : "Weiter";
-    $("#quiz-back").textContent = qIndex === 0 ? "Abbrechen" : "Zurück";
-    $("#quiz-body").classList.remove("enter");
-    void $("#quiz-body").offsetWidth;
-    $("#quiz-body").classList.add("enter");
+  function hairScore(p, pr) {
+    const h = p.hair;
+    if (minPrice(p) > pr.budget) return null;
+    if (h.blondOnly && pr.color !== "blondiert") return null;
+    let s = 0;
+    const why = [];
+    if (h.types.includes(pr.hairType)) { s += 3; why.push(`für ${HAIR_TYPE_LABEL[pr.hairType].replace(/^./, (c) => c.toLowerCase())}`); } else s -= 2;
+    if (h.thick.includes(pr.thick)) s += 2; else s -= 1;
+    if (h.scalp.includes(pr.scalp)) s += p.category === "shampoo" ? 3 : 1; else if (p.category === "shampoo") s -= 3;
+    const hits = h.goals.filter((g) => pr.w[g]);
+    hits.forEach((g) => { s += pr.w[g]; });
+    if (hits.length) why.push(hits.map((g) => HAIR_GOAL_LABEL[g]).join(", "));
+    if (h.color && pr.color !== "natur") { s += 1; why.push("für gefärbtes Haar"); }
+    if (p.tags.includes("sulfatfrei") && (pr.color !== "natur" || pr.hairType === "lockig" || pr.hairType === "kraus")) { s += 1; why.push("sulfatfrei"); }
+    if (p.tags.includes("leicht") && pr.thick === "fein") { s += 1; why.push("leicht, beschwert nicht"); }
+    s += nearBonus(p);
+    return { p, s, why };
   }
 
-  function nextQuestion() {
-    if (qIndex < QUESTIONS.length - 1) { qIndex++; renderQuestion(); }
-    else buildRoutine(answers);
+  const hairPick = (c, pr, filter = () => true) => PRODUCTS.filter((p) => p.area === "haar" && p.category === c && filter(p))
+    .map((p) => hairScore(p, pr)).filter(Boolean).sort((x, y) => y.s - x.s)[0] || null;
+
+  function hairResult(a) {
+    const sea = season();
+    const pr = hairProfile(a);
+    const curly = pr.hairType === "lockig" || pr.hairType === "kraus";
+    const washDay = [], extras = [];
+    const add = (list, label, r) => { if (r) list.push([label, r]); };
+
+    const shampoo = pr.scalp === "schuppen"
+      ? hairPick("shampoo", pr, (p) => p.hair.goals.includes("kopfhaut"))
+      : hairPick("shampoo", pr, (p) => !(p.hair.blondOnly));
+    if (shampoo) shampoo.note = pr.wash === "taeglich" ? "Bei täglicher Wäsche einmal kurz aufschäumen reicht" : "Vor allem auf die Kopfhaut, die Längen werden beim Ausspülen mitgereinigt";
+    add(washDay, "Waschen", shampoo);
+    const cond = hairPick("spuelung", pr);
+    if (cond) cond.note = "Nur in Längen und Spitzen, 2 bis 3 Minuten einwirken lassen";
+    add(washDay, "Pflegen", cond);
+    if (curly || pr.w.glanz || pr.w.frizz || pr.lengths !== "gesund") {
+      const leave = hairPick("leavein", pr);
+      if (leave) leave.note = curly ? "Ins nasse Haar kneten, nicht trocken bürsten" : "Ein bis zwei Pumpstöße in die Spitzen";
+      add(washDay, curly ? "Leave-in" : "Leave-in oder Öl", leave);
+    }
+    if (pr.heat !== "nie") {
+      const hp = hairPick("hitzeschutz", pr);
+      if (hp) hp.note = "Vor jedem Föhnen oder Glätten";
+      add(washDay, "Hitzeschutz", hp);
+    }
+
+    if (pr.lengths !== "gesund" || pr.color !== "natur" || pr.heat === "taeglich" || pr.w.feuchtigkeit) {
+      const mask = hairPick("maske", pr);
+      if (mask) mask.note = "Einmal pro Woche statt der Spülung";
+      add(extras, "Kur", mask);
+    }
+    if (pr.color === "blondiert") {
+      const silver = hairPick("shampoo", pr, (p) => p.hair.blondOnly);
+      if (silver) silver.note = "Einmal pro Woche gegen Gelbstich";
+      add(extras, "Silbershampoo", silver);
+    }
+    if (pr.scalp === "trocken" || pr.scalp === "schuppen") {
+      const sc = hairPick("kopfhaut", pr, (p) => !shampoo || p.id !== shampoo.p.id);
+      if (sc) sc.note = "Auf die Kopfhaut auftragen, nicht ausspülen";
+      add(extras, "Kopfhaut", sc);
+    }
+    if (pr.scalp === "fettig" && pr.wash !== "selten") {
+      const dry = hairPick("styling", pr);
+      if (dry) dry.note = "Zwischen den Wäschen, um einen Tag zu gewinnen";
+      add(extras, "Zwischendurch", dry);
+    }
+
+    const tips = [];
+    if (pr.scalp === "schuppen") tips.push("Benutze das Anti-Schuppen-Shampoo 2 bis 3 Mal pro Woche. Wenn es nach 4 Wochen nicht besser wird, lass die Kopfhaut ärztlich anschauen.");
+    if (pr.w.dichte) tips.push("Wenn deine Haare dünner werden oder stark ausfallen, lass das ärztlich abklären. Shampoos können die Ursache nicht behandeln.");
+    if (curly) tips.push("Locken mögen Feuchtigkeit: nur nass entwirren, mit einem Mikrofaser-Tuch oder T-Shirt trocknen und möglichst wenig anfassen.");
+    if (pr.heat === "taeglich") tips.push("Föhn auf mittlerer Stufe und Glätteisen höchstens auf 180 °C. Lass die Haare zwischendurch auch mal lufttrocknen.");
+    if (pr.scalp === "fettig" && pr.wash === "taeglich") tips.push("Tägliches Waschen ist in Ordnung, wenn das Shampoo mild ist. Spülung und Öl gehören nur in die Längen.");
+    if (pr.color === "blondiert") tips.push("Blondiertes Haar ist besonders empfindlich. Eine Bond-Kur einmal pro Woche hilft, Haarbruch vorzubeugen.");
+    if (pr.lengths === "spliss") tips.push("Spliss lässt sich nicht reparieren, nur verhindern. Lass die Spitzen alle 8 bis 12 Wochen schneiden.");
+
+    const goals = ((a.goals || []).length ? a.goals : Object.keys(pr.w).sort((x, y) => pr.w[y] - pr.w[x])).map((g) => HAIR_GOAL_LABEL[g]);
+    const thickLabel = { fein: "Feines Haar", mittel: "Mittelstarkes Haar", dick: "Kräftiges Haar" }[pr.thick];
+    const scalpLabel = { fettig: "Schnell fettende Kopfhaut", normal: "Unauffällige Kopfhaut", trocken: "Trockene Kopfhaut", schuppen: "Schuppen" }[pr.scalp];
+
+    return `
+      <div class="result-head">
+        <p class="eyebrow">Dein Ergebnis</p>
+        <h2>${esc(HAIR_TYPE_LABEL[pr.hairType])}${goals.length ? `, Fokus auf ${esc(listJoin(goals.slice(0, 3)))}` : ""}</h2>
+        <div class="profile-tags">
+          <span>${esc(thickLabel)}</span>
+          <span>${esc(scalpLabel)}</span>
+          ${pr.color !== "natur" ? `<span>${pr.color === "blondiert" ? "Blondiert" : "Gefärbt"}</span>` : ""}
+          <span>${pr.budget > 100 ? "Ohne Budgetgrenze" : `Bis ${pr.budget} € pro Produkt`}</span>
+        </div>
+      </div>
+      <div class="season-tip"><b>${esc(SEASON_NAME[sea])}:</b> ${HAIR_SEASON_TIP[sea]}</div>
+      <div class="routine-cols">
+        <div class="routine-col"><h3>${DROP}Am Waschtag</h3><ol>${washDay.map(([l, r], i) => stepHtml(l, r, i)).join("")}</ol></div>
+        ${extras.length ? `<div class="routine-col"><h3>${CAL}Ab und zu</h3><ol>${extras.map(([l, r], i) => stepHtml(l, r, i)).join("")}</ol></div>` : ""}
+      </div>
+      ${tips.length ? `<div class="tips"><h3>Gut zu wissen</h3><ul>${tips.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>` : ""}
+      <p class="disclaimer">Diese Empfehlungen ersetzen keine ärztliche oder dermatologische Beratung.</p>`;
   }
 
-  function initSkin() {
-    $("#season-name").textContent = SEASON_NAME[season()];
-    $("#quiz-total").textContent = QUESTIONS.length;
-    $("#quiz-start").addEventListener("click", () => { qIndex = 0; showSkinView("quiz"); renderQuestion(); });
-    $("#quiz-back").addEventListener("click", () => {
-      if (qIndex === 0) { showSkinView("intro"); return; }
-      qIndex--; renderQuestion();
-    });
-    $("#quiz-next").addEventListener("click", nextQuestion);
-    $("#quiz-body").addEventListener("click", (e) => {
-      const btn = e.target.closest(".option");
-      if (!btn) return;
-      const q = QUESTIONS[qIndex];
-      if (q.multi) {
-        const set = new Set(answers[q.key] || []);
-        set.has(btn.dataset.v) ? set.delete(btn.dataset.v) : set.add(btn.dataset.v);
-        answers[q.key] = [...set];
-        renderQuestionKeepAnim();
-      } else {
-        answers[q.key] = btn.dataset.v;
-        document.querySelectorAll("#quiz-body .option").forEach((b) => {
-          b.classList.toggle("on", b === btn); b.setAttribute("aria-checked", b === btn);
-        });
-        setTimeout(nextQuestion, 220);
-      }
-    });
-    $("#skin-result").addEventListener("click", (e) => {
-      const find = e.target.closest("[data-find]");
-      if (find) { switchTab("tab-search"); selectProduct(find.dataset.find); return; }
-      if (e.target.id === "quiz-restart") {
-        Object.keys(answers).forEach((k) => delete answers[k]);
-        showSkinView("intro");
-      }
-    });
-  }
-
-  // Bei Mehrfachauswahl nur Häkchen und Button aktualisieren, ohne Einblend-Animation
-  function renderQuestionKeepAnim() {
-    const q = QUESTIONS[qIndex];
-    const set = new Set(answers[q.key] || []);
-    document.querySelectorAll("#quiz-body .option").forEach((b) => {
-      const on = set.has(b.dataset.v);
-      b.classList.toggle("on", on); b.setAttribute("aria-checked", on);
-    });
-    $("#quiz-next").textContent = qIndex === QUESTIONS.length - 1 ? "Ergebnis anzeigen" : set.size ? "Weiter" : "Überspringen";
+  function initChecks() {
+    document.querySelectorAll(".season-name").forEach((n) => { n.textContent = SEASON_NAME[season()]; });
+    createQuiz("skin", SKIN_QUESTIONS, skinResult);
+    createQuiz("hair", HAIR_QUESTIONS, hairResult);
   }
 
   // ---------- Tabs ----------
@@ -717,12 +934,22 @@
     });
 
     document.querySelectorAll(".tab-btn").forEach((b) => b.addEventListener("click", () => switchTab(b.dataset.tab)));
+
+    renderBrowse();
+    $("#browse-tabs").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-browse]");
+      if (b) { browseKey = b.dataset.browse; renderBrowse(); }
+    });
+    $("#browse-list").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-pick]");
+      if (b) { selectProduct(b.dataset.pick); window.scrollTo({ top: 0, behavior: "smooth" }); }
+    });
   }
 
   // ---------- Start ----------
   initMap();
   bind();
-  initSkin();
+  initChecks();
   render();
   const initial = new URLSearchParams(location.search).get("p");
   if (initial && productById(initial)) selectProduct(initial, { updateUrl: false });

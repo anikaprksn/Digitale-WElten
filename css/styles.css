@@ -190,6 +190,23 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 .chip.pop { color: var(--text); }
 .chip.pop:hover { border-color: var(--accent); color: var(--accent); }
 
+/* Stöbern nach Kategorie */
+.browse { margin: 8px 0 26px; }
+.browse-label, .popular > span { display: block; font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .07em; text-transform: uppercase; }
+.seg { display: inline-flex; gap: 2px; padding: 3px; margin-top: 10px; border-radius: 999px; background: var(--surface-2); }
+.seg button { border: 0; background: none; border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.seg button.on { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+.browse-list { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.browse-cat { display: block; font-size: 12px; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
+.browse-group ul { list-style: none; margin: 0; padding: 0; background: var(--surface); border-radius: 12px; box-shadow: var(--shadow-sm); overflow: hidden; }
+.browse-group li + li { border-top: 1px solid var(--surface-2); }
+.browse-item {
+  width: 100%; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; text-align: left;
+  border: 0; background: none; padding: 11px 14px; font-size: 14px;
+}
+.browse-item:hover { background: var(--accent-soft); }
+.browse-price { flex: none; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+
 /* Produktkarte */
 .product-card { background: var(--surface); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); }
 .pc-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
@@ -352,6 +369,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 .step-why { font-size: 12px; color: var(--accent); margin-top: 3px; }
 .step-why.warn { color: var(--warn); }
 .step-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--surface-2); }
+.step-note { font-size: 13px; color: var(--text); margin-top: 3px; font-style: italic; }
 .step-where { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; min-width: 0; }
 .tips { margin-top: 28px; }
 .tips h3 { margin: 0 0 10px; font-size: 18px; }

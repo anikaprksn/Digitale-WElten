@@ -3,8 +3,8 @@
 Kosmetikprodukte in Geschäften finden – mit Bestandsanzeige auf der Stadtkarte (Start: Berlin).
 
 Gib ein Produkt ein und sieh sofort, bei welcher Filiale von **dm, Rossmann, Douglas oder Sephora**
-es gerade vorrätig ist – statt von Laden zu Laden zu laufen. Dazu ein **Haut-Check**, der dir eine
-Routine für morgens/abends und die aktuelle Jahreszeit vorschlägt.
+es gerade vorrätig ist – statt von Laden zu Laden zu laufen. Dazu ein **Haut-Check** (Routine für morgens/abends und die aktuelle Jahreszeit, angelehnt an Tipps von
+Leon / @xskincare) und ein **Haar-Check** für die passende Haarpflege.
 
 > ⚠️ Prototyp: Filialstandorte, Preise und Bestände sind **Demo-Daten**.
 

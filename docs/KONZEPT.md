@@ -24,9 +24,38 @@ und die aktuelle Jahreszeit vorschlägt – mit Produkten, die man direkt in der
 | Standort per GPS oder Tipp auf die Karte | ✅ |
 | Route (Google Maps), Reservieren / Benachrichtigen | Demo-Buttons |
 | Haut-Fragebogen → Routine (morgens/abends, Jahreszeit, Budget, empfindliche Haut) | ✅ |
+| Haar-Fragebogen → Pflegeroutine (Waschtag / ab und zu) | ✅ |
+| Stöbern nach Kategorie (Hautpflege, Make-up, Haare) | ✅ |
 | Kamera-Hautscan | Teaser („bald“) |
 
 **Alle Bestände, Preise und Filialstandorte sind Demo-Daten** (`js/data.js`).
+
+## Haut-Check: Grundlage der Empfehlungen
+Die Routine-Logik orientiert sich an Pflegegrundsätzen, die der Skinfluencer **Leon (@xskincare)** öffentlich teilt.
+Es besteht **keine Kooperation**; Grundlage sind Presseberichte über seine Tipps (Stand 2023–2025, nicht seine Originalbeiträge):
+
+- Hauttyp-Test: Gesicht waschen, 60 Minuten ohne Creme warten – spannt sie, glänzt sie, oder nur die T-Zone?
+- Morgens: Niacinamid- oder Vitamin-C-Serum, dann Feuchtigkeit, Creme, Sonnenschutz
+- Feuchtigkeit: Glycerin, Panthenol oder Polyglutaminsäure sind oft wirksamer als reines Hyaluron
+- AHA und BHA an unterschiedlichen Tagen im Wechsel
+- Poren sind normal; Niacinamid, BHA und Vitamin A können sie verfeinern
+- Gereizte Haut: Routine reduzieren, morgens nur Wasser, keine Säuren, kein Retinol, keine alkoholhaltigen Produkte, 2–6 Wochen Geduld
+- Genannte Produkte u. a.: Balea Niacinamid-/Azelainsäure-Serum, Nø Cosmetics AHA/PHA Peeling Cleanser und 120h Hyper Moisture Cream,
+  Eucerin Oil Control LSF 50+, Garnier LSF-Fluid 50+, Sun Ozon Sonnenfluid LSF 50
+
+Quellen: [wmn.de – 10 Must-Haves](https://www.wmn.de/lifestyle/skincare-routine-alle-hauttypen-leon-xskincare-id760339),
+[wmn.de – Hautbarriere](https://www.wmn.de/beauty/face-body/skincare-routine-hautbarriere-influencer-leon-id758969),
+[wmn.de – 10 unter 10 €](https://www.wmn.de/beauty/face-body/skincare-basics-hautpflege-leon-xskincare-id760337),
+[wmn.de – Glycerin statt Hyaluron](https://www.wmn.de/beauty/face-body/hautpflege-leon-xskincare-hautpflege-tipp-2025-id754030),
+[hautwahrheit.de – Frühlingsroutine](https://hautwahrheit.de/fruehling.php),
+[GRAZIA – Interview](https://www.grazia-magazin.de/beauty/leon-von-xskincare-der-skinfluencer-im-grossen-beauty-talk-mit-grazia-52758.html)
+
+Für eine echte Veröffentlichung sollte man Leon fragen, ob er namentlich genannt werden möchte – oder eine Kooperation anbieten.
+
+## Haar-Check
+9 Fragen (Haarstruktur, Haardicke, Kopfhaut, Längen, Färbung, Hitze-Styling, Waschrhythmus, Wünsche, Budget) →
+Routine „Am Waschtag“ (Shampoo, Spülung, Leave-in, Hitzeschutz) und „Ab und zu“ (Kur, Silbershampoo, Kopfhaut, Trockenshampoo).
+Bei Schuppen, die nicht besser werden, und bei Haarausfall verweist die App auf ärztlichen Rat.
 
 ## Die größte Herausforderung: echte Bestandsdaten
 dm und Rossmann zeigen Filialverfügbarkeit bereits in ihren eigenen Apps/Webseiten – es gibt aber **keine
