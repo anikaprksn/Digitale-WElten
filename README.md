@@ -24,10 +24,10 @@ css/styles.css      Design (mobil zuerst, Dark Mode)
 js/data.js          Demo-Daten: Händler, Filialen, Produkte
 js/app.js           Suche, Karte, Bestandslogik, Fragebogen
 vendor/leaflet/     Kartenbibliothek Leaflet 1.9.4 (BSD-2-Lizenz)
-fonts/              TeX Gyre Bonum – freie Bookman-Schrift (GUST Font License)
+fonts/              Source Serif 4 und Inter (SIL Open Font License)
 docs/KONZEPT.md     Idee, Datenquellen, Datenschutz, nächste Schritte
 ```
 
 Karte: © OpenStreetMap-Mitwirkende (offene Daten, ODbL). Ersatzdienste: OSM France, CARTO.
 Bezirksgrenzen: Amt für Statistik Berlin-Brandenburg (CC BY).
-Schrift: Bookman Old Style, wenn auf dem Gerät installiert, sonst TeX Gyre Bonum (frei, GUST Font License).
+Schriften: Source Serif 4 (Überschriften, Lesetext) und Inter (Bedienelemente), beide SIL Open Font License.
