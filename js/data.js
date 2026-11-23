@@ -334,3 +334,66 @@ PRODUCTS.push(
   HP("plantur39-tonikum", "Plantur 39", "Coffein-Tonikum 200 ml", "kopfhaut", DRO, { dm: 9.95, rossmann: 9.99 }, H(ALLT, ALLTH, ["normal", "fettig", "trocken"], ["wachstum", "dichte", "kopfhaut"])),
   HP("balea-wachstum-serum", "Balea", "Haarwachstums-Serum mit Koffein 100 ml", "kopfhaut", ["dm"], { dm: 4.95 }, H(ALLT, ALLTH, ["normal", "fettig", "trocken"], ["wachstum", "kopfhaut"])),
 );
+
+// ---------- Weitere Filialen in allen Bezirken (ungefähre Demo-Standorte) ----------
+const ST = (id, chain, area, district, lat, lng) => ({ id, chain, area, district, lat, lng });
+STORES.push(
+  // dm
+  ST("dm-spandau", "dm", "Spandau Arcaden", "Spandau", 52.5363, 13.2045),
+  ST("dm-gesundbr", "dm", "Gesundbrunnen-Center", "Wedding", 52.5484, 13.3880),
+  ST("dm-gropius", "dm", "Gropius Passagen", "Neukölln", 52.4310, 13.4600),
+  ST("dm-eastgate", "dm", "Eastgate", "Marzahn", 52.5440, 13.5490),
+  ST("dm-tempelhof", "dm", "Tempelhofer Damm", "Tempelhof", 52.4700, 13.3850),
+  ST("dm-zehlendorf", "dm", "Teltower Damm", "Zehlendorf", 52.4330, 13.2590),
+  ST("dm-koepenick", "dm", "Forum Köpenick", "Köpenick", 52.4590, 13.5800),
+  ST("dm-schoeneweide", "dm", "Schöneweide", "Treptow", 52.4555, 13.5100),
+  ST("dm-pankow", "dm", "Rathaus-Center Pankow", "Pankow", 52.5690, 13.4100),
+  ST("dm-weissensee", "dm", "Berliner Allee", "Weißensee", 52.5530, 13.4610),
+  ST("dm-hohenschoen", "dm", "Linden-Center", "Hohenschönhausen", 52.5520, 13.5040),
+  ST("dm-maerkisches", "dm", "Märkisches Zentrum", "Reinickendorf", 52.6000, 13.3560),
+  ST("dm-tegel", "dm", "Hallen am Borsigturm", "Tegel", 52.5850, 13.2850),
+  ST("dm-moabit", "dm", "Turmstraße", "Moabit", 52.5262, 13.3440),
+  ST("dm-warschauer", "dm", "Warschauer Straße", "Friedrichshain", 52.5060, 13.4500),
+  ST("dm-mehringdamm", "dm", "Mehringdamm", "Kreuzberg", 52.4930, 13.3880),
+  ST("dm-schoeneberg", "dm", "Hauptstraße", "Schöneberg", 52.4900, 13.3560),
+  ST("dm-rosenthaler", "dm", "Rosenthaler Platz", "Mitte", 52.5297, 13.4015),
+  ST("dm-hermannstr", "dm", "Hermannstraße", "Neukölln", 52.4720, 13.4290),
+  ST("dm-hellersdorf", "dm", "Helle Mitte", "Hellersdorf", 52.5365, 13.6040),
+
+  // Rossmann
+  ST("ro-spandau", "rossmann", "Altstadt Spandau", "Spandau", 52.5370, 13.2020),
+  ST("ro-gesundbr", "rossmann", "Gesundbrunnen-Center", "Wedding", 52.5480, 13.3870),
+  ST("ro-gropius", "rossmann", "Gropius Passagen", "Neukölln", 52.4300, 13.4610),
+  ST("ro-eastgate", "rossmann", "Eastgate", "Marzahn", 52.5436, 13.5480),
+  ST("ro-hellersdorf", "rossmann", "Helle Mitte", "Hellersdorf", 52.5370, 13.6050),
+  ST("ro-koepenick", "rossmann", "Forum Köpenick", "Köpenick", 52.4585, 13.5810),
+  ST("ro-adlershof", "rossmann", "Adlershof", "Treptow", 52.4350, 13.5450),
+  ST("ro-pankow", "rossmann", "Rathaus-Center Pankow", "Pankow", 52.5695, 13.4105),
+  ST("ro-schoenh", "rossmann", "Schönhauser Allee Arcaden", "Prenzlauer Berg", 52.5415, 13.4130),
+  ST("ro-warschauer", "rossmann", "Warschauer Straße", "Friedrichshain", 52.5070, 13.4510),
+  ST("ro-friedr", "rossmann", "Friedrichstraße", "Mitte", 52.5180, 13.3885),
+  ST("ro-schoeneberg", "rossmann", "Hauptstraße", "Schöneberg", 52.4905, 13.3550),
+  ST("ro-tempelhof", "rossmann", "Tempelhofer Damm", "Tempelhof", 52.4710, 13.3860),
+  ST("ro-zehlendorf", "rossmann", "Teltower Damm", "Zehlendorf", 52.4335, 13.2585),
+  ST("ro-maerkisches", "rossmann", "Märkisches Zentrum", "Reinickendorf", 52.6005, 13.3555),
+  ST("ro-tegel", "rossmann", "Gorkistraße", "Tegel", 52.5880, 13.2870),
+  ST("ro-wilmersd", "rossmann", "Wilmersdorfer Straße", "Charlottenburg", 52.5075, 13.3070),
+  ST("ro-hohenschoen", "rossmann", "Linden-Center", "Hohenschönhausen", 52.5525, 13.5035),
+  ST("ro-kotti", "rossmann", "Kottbusser Tor", "Kreuzberg", 52.4990, 13.4180),
+  ST("ro-friedenau", "rossmann", "Rheinstraße", "Friedenau", 52.4710, 13.3290),
+
+  // Douglas
+  ST("do-spandau", "douglas", "Spandau Arcaden", "Spandau", 52.5365, 13.2040),
+  ST("do-ringcenter", "douglas", "Ring-Center", "Friedrichshain", 52.5143, 13.4790),
+  ST("do-gropius", "douglas", "Gropius Passagen", "Neukölln", 52.4312, 13.4598),
+  ST("do-eastgate", "douglas", "Eastgate", "Marzahn", 52.5438, 13.5492),
+  ST("do-koepenick", "douglas", "Forum Köpenick", "Köpenick", 52.4592, 13.5803),
+  ST("do-maerkisches", "douglas", "Märkisches Zentrum", "Reinickendorf", 52.6002, 13.3562),
+  ST("do-schoenh", "douglas", "Schönhauser Allee Arcaden", "Prenzlauer Berg", 52.5417, 13.4127),
+  ST("do-friedr", "douglas", "Friedrichstraße", "Mitte", 52.5155, 13.3888),
+  ST("do-zehlendorf", "douglas", "Zehlendorf Mitte", "Zehlendorf", 52.4338, 13.2595),
+
+  // Sephora
+  ST("se-alex", "sephora", "Alexanderplatz", "Mitte", 52.5208, 13.4125),
+  ST("se-schloss", "sephora", "Schloßstraße", "Steglitz", 52.4580, 13.3210),
+);
