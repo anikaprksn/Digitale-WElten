@@ -966,6 +966,7 @@
     });
 
     document.querySelectorAll(".tab-btn").forEach((b) => b.addEventListener("click", () => switchTab(b.dataset.tab)));
+    document.querySelectorAll(".footer-col [data-tab]").forEach((b) => b.addEventListener("click", () => switchTab(b.dataset.tab)));
 
     renderBrowse();
     $("#browse-tabs").addEventListener("click", (e) => {
