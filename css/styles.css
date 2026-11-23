@@ -87,9 +87,9 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 }
 .logo svg { width: 34px; height: 34px; }
 .logo .lg-fg { fill: var(--on-accent); }
-.logo .lg-label { fill: var(--accent); opacity: .18; }
-.logo .lg-lens { fill: var(--accent); stroke: var(--on-accent); stroke-width: 4; }
-.logo .lg-handle { stroke: var(--on-accent); stroke-width: 5.5; stroke-linecap: round; }
+.logo .lg-ring { fill: none; stroke: var(--on-accent); stroke-width: 4.5; }
+.logo .lg-handle { stroke: var(--on-accent); stroke-width: 6; stroke-linecap: round; }
+.logo .lg-line { fill: none; stroke: var(--on-accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .demo-badge {
   font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
   padding: 4px 10px; border-radius: 999px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--border);
