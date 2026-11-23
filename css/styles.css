@@ -1,10 +1,11 @@
 /* Layout: Mobil = Suche · Karte · Liste untereinander; Desktop = Seitenleiste links, Karte rechts.
    Palette: Navy als Grundton für Schrift und Akzente, kühle helle Flächen.
-   Schrift wie in der Claude-App: Serifenschrift für Überschriften und Lesetext (Source Serif 4,
-   frei ähnlich zu Tiempos), klare Groteskschrift für Bedienelemente (Inter, frei ähnlich zu Styrene). */
-@font-face { font-family: "Source Serif 4"; src: url("../fonts/source-serif-4-latin-opsz-normal.woff2") format("woff2-variations"), url("../fonts/source-serif-4-latin-opsz-normal.woff2") format("woff2"); font-weight: 200 900; font-style: normal; font-display: swap; }
-@font-face { font-family: "Source Serif 4"; src: url("../fonts/source-serif-4-latin-opsz-italic.woff2") format("woff2-variations"), url("../fonts/source-serif-4-latin-opsz-italic.woff2") format("woff2"); font-weight: 200 900; font-style: italic; font-display: swap; }
-@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-wght-normal.woff2") format("woff2-variations"), url("../fonts/inter-latin-wght-normal.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+   Schrift: Poppins überall – rund, modern und klar (SIL Open Font License, lokal eingebunden). */
+@font-face { font-family: "Poppins"; src: url("../fonts/poppins-latin-300-normal.woff2") format("woff2"); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: "Poppins"; src: url("../fonts/poppins-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Poppins"; src: url("../fonts/poppins-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Poppins"; src: url("../fonts/poppins-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Poppins"; src: url("../fonts/poppins-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
 
 :root {
   --bg: #f4f4f6;
@@ -24,8 +25,8 @@
   --district-label: #1c2747;
   --shadow: 0 1px 2px rgb(20 33 61 / .05), 0 8px 28px rgb(20 33 61 / .08);
   --shadow-sm: 0 1px 2px rgb(20 33 61 / .06), 0 2px 8px rgb(20 33 61 / .05);
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-head: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-body: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-head: var(--font-body);
   --radius: 14px;
   --topbar-h: 58px;
   --tabbar-h: 64px;
@@ -53,16 +54,14 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body {
-  font: 15px/1.5 var(--font-body);
+  font: 14.5px/1.55 var(--font-body);
   background: var(--bg);
   color: var(--text);
   padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
   -webkit-font-smoothing: antialiased;
 }
-h1, h2, h3 { font-family: var(--font-head); font-weight: 500; letter-spacing: -.01em; text-wrap: balance; font-optical-sizing: auto; }
-/* Lesetext in Serifenschrift, wie die Antworten in der Claude-App */
-.intro-text, .q-hint, .tips li, .season-tip, .step-note, .empty-state > p, .results-summary { font-family: var(--font-head); }
-.intro-text, .empty-state > p { font-size: 17px; line-height: 1.55; }
+h1, h2, h3 { font-family: var(--font-head); font-weight: 600; letter-spacing: -.02em; text-wrap: balance; }
+.intro-text, .empty-state > p { font-size: 16px; line-height: 1.6; }
 button { font: inherit; color: inherit; cursor: pointer; }
 button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .muted { color: var(--muted); }
@@ -80,7 +79,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
   -webkit-backdrop-filter: saturate(1.6) blur(14px); backdrop-filter: saturate(1.6) blur(14px);
   border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
 }
-.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-head); font-weight: 600; font-size: 21px; letter-spacing: -.015em; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-head); font-weight: 600; font-size: 19px; letter-spacing: -.02em; }
 .brand small { font-family: var(--font-body); font-weight: 500; color: var(--muted); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
 .logo {
   width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; flex: none;
@@ -187,7 +186,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 
 /* Leere Ansicht */
 .empty-state { padding: 12px 0; }
-.empty-state h2 { margin: 0 0 8px; font-size: 28px; font-weight: 400; letter-spacing: -.02em; }
+.empty-state h2 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -.03em; }
 .empty-state p { margin: 0 0 16px; color: var(--muted); max-width: 60ch; }
 .popular > span { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .07em; text-transform: uppercase; }
 #popular-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
@@ -215,7 +214,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 .product-card { background: var(--surface); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); }
 .pc-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
 .pc-brand { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; }
-.pc-name { font-family: var(--font-head); font-weight: 500; font-size: 20px; letter-spacing: -.01em; }
+.pc-name { font-family: var(--font-head); font-weight: 600; font-size: 18px; letter-spacing: -.015em; }
 .pc-price { font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .pc-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 12px; font-size: 13px; }
 .chain-tag {
@@ -289,7 +288,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 }
 
 /* Start */
-.intro-title { margin: 0; font-size: clamp(28px, 6.4vw, 40px); line-height: 1.12; font-weight: 400; letter-spacing: -.02em; }
+.intro-title { margin: 0; font-size: clamp(28px, 6.4vw, 40px); line-height: 1.12; font-weight: 600; letter-spacing: -.03em; }
 .intro-text { margin: 14px 0 0; color: var(--muted); font-size: 16px; max-width: 58ch; }
 .intro-meta { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 22px; font-size: 13px; color: var(--muted); }
 .intro-meta b { color: var(--text); font-weight: 600; }
@@ -309,7 +308,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 .quiz-count { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .quiz-bar { height: 4px; border-radius: 999px; background: var(--surface-2); margin: 12px 0 30px; overflow: hidden; }
 .quiz-bar span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: inherit; transition: width .35s ease; }
-.q-title { margin: 0; font-size: clamp(23px, 5.4vw, 30px); line-height: 1.2; font-weight: 400; letter-spacing: -.02em; }
+.q-title { margin: 0; font-size: clamp(23px, 5.4vw, 30px); line-height: 1.2; font-weight: 600; letter-spacing: -.03em; }
 .q-hint { margin: 10px 0 0; color: var(--muted); }
 .options { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
 .option {
@@ -350,7 +349,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 .secondary-btn:hover { border-color: var(--accent); color: var(--accent); }
 
 /* Ergebnis */
-.result-head h2 { margin: 0; font-size: clamp(24px, 5.6vw, 32px); line-height: 1.18; font-weight: 400; letter-spacing: -.02em; }
+.result-head h2 { margin: 0; font-size: clamp(24px, 5.6vw, 32px); line-height: 1.18; font-weight: 600; letter-spacing: -.03em; }
 .profile-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
 .profile-tags span { font-size: 12px; font-weight: 600; padding: 5px 11px; border-radius: 999px; background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
 .season-tip { margin-top: 22px; background: var(--accent-soft); border-radius: 14px; padding: 14px 16px; font-size: 14px; }
@@ -373,7 +372,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 .step-why { font-size: 12px; color: var(--accent); margin-top: 3px; }
 .step-why.warn { color: var(--warn); }
 .step-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--surface-2); }
-.step-note { font-size: 13px; color: var(--text); margin-top: 3px; font-style: italic; }
+.step-note { font-size: 13px; color: var(--muted); margin-top: 3px; }
 .step-where { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; min-width: 0; }
 .tips { margin-top: 28px; }
 .tips h3 { margin: 0 0 10px; font-size: 18px; }
