@@ -48,6 +48,7 @@
           <div id="results-summary" class="results-summary"></div>
           <ul id="results" class="results"></ul>
           <div id="empty-state" class="empty-state">
+            <p class="eyebrow">Berlin · 24 Filialen · 4 Händler</p>
             <h2>Was suchst du?</h2>
             <p>Gib ein Produkt ein – wir zeigen dir, in welcher Filiale von dm, Rossmann, Douglas oder Sephora in deiner Nähe es gerade vorrätig ist.</p>
             <div class="popular">
@@ -70,72 +71,41 @@
     <!-- ============ TAB: HAUT-CHECK ============ -->
     <section id="tab-skin" class="tab" aria-label="Haut-Check">
       <div class="skin-wrap">
-        <div class="scan-teaser">
-          <div class="scan-icon" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div>
-          <div>
-            <h3>Hautscan per Kamera <span class="soon">bald</span></h3>
-            <p>Später analysiert die App ein Foto deiner Haut (z. B. Feuchtigkeit, Rötungen, Unreinheiten). Bis dahin hilft dir der Fragebogen.</p>
+
+        <!-- Start -->
+        <div id="skin-intro" class="skin-intro">
+          <p class="eyebrow">Haut-Check · <span id="season-name"></span></p>
+          <h2 class="intro-title">Finde die Routine, die deine Haut gerade braucht.</h2>
+          <p class="intro-text">Beantworte ein paar kurze Fragen zu deiner Haut und deinem Alltag. Du bekommst eine Routine für morgens und abends, passend zur Jahreszeit und mit Produkten, die du in Berlin direkt bekommst.</p>
+          <div class="intro-meta">
+            <span><b id="quiz-total"></b> Fragen</span>
+            <span><b>ca. 2</b> Minuten</span>
+            <span><b>Kein</b> Konto nötig</span>
+          </div>
+          <button type="button" class="primary-btn" id="quiz-start">Haut-Check starten</button>
+
+          <div class="scan-teaser">
+            <div class="scan-icon" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div>
+            <div>
+              <h3>Hautscan per Kamera <span class="soon">bald</span></h3>
+              <p>Später erkennt die App auf einem Foto zum Beispiel Rötungen, Glanz und trockene Stellen. Das Foto wird direkt auf dem Handy ausgewertet und nicht gespeichert.</p>
+            </div>
           </div>
         </div>
 
-        <form id="skin-form" class="skin-form">
-          <h2>Dein Haut-Check</h2>
-          <p class="muted">5 kurze Fragen – danach bekommst du eine Routine für <strong id="season-label"></strong>, mit Produkten, die du in Berlin direkt bekommst.</p>
+        <!-- Fragen -->
+        <div id="skin-quiz" class="skin-quiz" hidden>
+          <div class="quiz-top">
+            <button type="button" class="link-btn" id="quiz-back">Zurück</button>
+            <span id="quiz-count" class="quiz-count"></span>
+          </div>
+          <div class="quiz-bar" aria-hidden="true"><span id="quiz-progress"></span></div>
+          <div id="quiz-body" class="quiz-body" aria-live="polite"></div>
+          <button type="button" class="primary-btn" id="quiz-next" hidden>Weiter</button>
+        </div>
 
-          <fieldset>
-            <legend>1. Wie fühlt sich deine Haut meistens an?</legend>
-            <div class="choices" data-name="skinType" data-type="single">
-              <button type="button" data-value="trocken">Trocken / spannt</button>
-              <button type="button" data-value="fettig">Fettig / glänzt</button>
-              <button type="button" data-value="mischhaut">Mischhaut (T-Zone)</button>
-              <button type="button" data-value="normal">Normal</button>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend>2. Was beschäftigt dich gerade? <span class="muted">(mehrere möglich)</span></legend>
-            <div class="choices" data-name="concerns" data-type="multi">
-              <button type="button" data-value="unreinheiten">Pickel / Unreinheiten</button>
-              <button type="button" data-value="trockenheit">Trockene Stellen</button>
-              <button type="button" data-value="roetungen">Rötungen</button>
-              <button type="button" data-value="glanz">Glanz / große Poren</button>
-              <button type="button" data-value="falten">Erste Fältchen</button>
-              <button type="button" data-value="pigmentflecken">Pigmentflecken</button>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend>3. Reagiert deine Haut empfindlich (Brennen, Jucken)?</legend>
-            <div class="choices" data-name="sensitive" data-type="single">
-              <button type="button" data-value="ja">Ja, oft</button>
-              <button type="button" data-value="manchmal">Manchmal</button>
-              <button type="button" data-value="nein">Nein</button>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend>4. Wie viel bist du draußen?</legend>
-            <div class="choices" data-name="outdoor" data-type="single">
-              <button type="button" data-value="wenig">Kaum</button>
-              <button type="button" data-value="mittel">Täglich etwas</button>
-              <button type="button" data-value="viel">Viel / Sport draußen</button>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend>5. Dein Budget pro Produkt?</legend>
-            <div class="choices" data-name="budget" data-type="single">
-              <button type="button" data-value="15">bis 15 €</button>
-              <button type="button" data-value="30">bis 30 €</button>
-              <button type="button" data-value="999">egal</button>
-            </div>
-          </fieldset>
-
-          <button type="submit" class="primary-btn">Routine anzeigen</button>
-          <p id="skin-error" class="error" hidden></p>
-        </form>
-
-        <div id="routine" class="routine" hidden></div>
+        <!-- Ergebnis -->
+        <div id="skin-result" class="routine" hidden></div>
       </div>
     </section>
   </main>

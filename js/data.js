@@ -82,7 +82,7 @@ const PRODUCTS = [
     skin: ["normal", "mischhaut", "trocken"], concerns: ["trockenheit"], tags: [], time: "beides" },
   { id: "balea-mizellen", brand: "Balea", name: "Mizellenwasser 400 ml", category: "reinigung",
     chains: ["dm"], prices: { dm: 1.95 },
-    skin: ["normal", "trocken", "mischhaut"], concerns: ["roetungen"], tags: ["parfuemfrei"], time: "abends" },
+    skin: ["normal", "trocken", "mischhaut"], concerns: ["roetungen"], tags: ["parfuemfrei"], time: "abends", remover: true },
   { id: "isana-hyaluron", brand: "Isana", name: "Hyaluron Tagescreme LSF 15 50 ml", category: "pflege",
     chains: ["rossmann"], prices: { rossmann: 3.49 },
     skin: ["normal", "mischhaut", "trocken"], concerns: ["trockenheit", "falten"], tags: [], time: "morgens" },
@@ -94,13 +94,13 @@ const PRODUCTS = [
     skin: ["normal", "trocken", "mischhaut", "fettig"], concerns: ["sonnenschutz"], tags: ["parfuemfrei"], time: "morgens" },
   { id: "bioderma-sensibio", brand: "Bioderma", name: "Sensibio H2O Mizellenwasser 250 ml", category: "reinigung",
     chains: ["dm", "rossmann", "douglas"], prices: { dm: 12.95, rossmann: 12.99, douglas: 14.99 },
-    skin: ["trocken", "normal", "mischhaut"], concerns: ["roetungen", "trockenheit"], tags: ["parfuemfrei"], time: "abends" },
+    skin: ["trocken", "normal", "mischhaut"], concerns: ["roetungen", "trockenheit"], tags: ["parfuemfrei"], time: "abends", remover: true },
   { id: "eucerin-filler", brand: "Eucerin", name: "Hyaluron-Filler Tagespflege LSF 30", category: "pflege",
     chains: ["dm", "rossmann", "douglas"], prices: { dm: 27.95, rossmann: 27.99, douglas: 32.99 },
     skin: ["trocken", "normal"], concerns: ["falten", "trockenheit"], tags: ["reichhaltig"], time: "morgens" },
   { id: "paulas-bha", brand: "Paula's Choice", name: "Skin Perfecting 2% BHA Liquid 118 ml", category: "serum",
     chains: ["douglas"], prices: { douglas: 36.00 },
-    skin: ["fettig", "mischhaut"], concerns: ["unreinheiten", "glanz"], tags: ["parfuemfrei"], time: "abends" },
+    skin: ["fettig", "mischhaut"], concerns: ["unreinheiten", "glanz"], tags: ["parfuemfrei", "aktiv"], time: "abends" },
   { id: "clinique-surge", brand: "Clinique", name: "Moisture Surge 100H 50 ml", category: "pflege",
     chains: ["douglas", "sephora"], prices: { douglas: 39.99, sephora: 39.99 },
     skin: ["trocken", "normal", "mischhaut"], concerns: ["trockenheit"], tags: ["parfuemfrei", "leicht"], time: "beides" },
@@ -127,10 +127,19 @@ const PRODUCTS = [
     skin: [], concerns: [], tags: [], time: null },
   { id: "sephora-cleansing", brand: "Sephora Collection", name: "Cleansing Water 200 ml", category: "reinigung",
     chains: ["sephora"], prices: { sephora: 9.99 },
-    skin: ["normal", "mischhaut", "trocken"], concerns: ["roetungen"], tags: [], time: "abends" },
+    skin: ["normal", "mischhaut", "trocken"], concerns: ["roetungen"], tags: [], time: "abends", remover: true },
   { id: "avene-cicalfate", brand: "Avène", name: "Cicalfate+ Reparierende Creme 40 ml", category: "pflege",
     chains: ["douglas"], prices: { douglas: 14.99 },
     skin: ["trocken", "normal", "mischhaut", "fettig"], concerns: ["roetungen", "trockenheit"], tags: ["parfuemfrei", "reichhaltig"], time: "abends" },
 ];
+
+PRODUCTS.push(
+  { id: "to-retinol", brand: "The Ordinary", name: "Retinol 0.5% in Squalane 30 ml", category: "serum",
+    chains: ["dm", "douglas", "sephora"], prices: { dm: 8.95, douglas: 9.90, sephora: 9.90 },
+    skin: ["normal", "mischhaut", "trocken", "fettig"], concerns: ["falten", "pigmentflecken", "unreinheiten"], tags: ["parfuemfrei", "aktiv"], time: "abends" },
+  { id: "garnier-vitc", brand: "Garnier", name: "Vitamin C Glow Booster Serum 30 ml", category: "serum",
+    chains: ["dm", "rossmann"], prices: { dm: 12.95, rossmann: 12.99 },
+    skin: ["normal", "mischhaut", "fettig"], concerns: ["pigmentflecken"], tags: ["leicht"], time: "morgens" },
+);
 
 const POPULAR = ["cerave-creme", "to-niacinamide", "lrp-uvmune", "rare-blush", "balea-hyaluron"];

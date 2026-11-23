@@ -349,48 +349,117 @@
     if (m <= 8) return "sommer";
     return "herbst";
   }
-  const SEASON_LABEL = { winter: "den Winter", fruehling: "den Frühling", sommer: "den Sommer", herbst: "den Herbst" };
+  const SEASON_NAME = { winter: "Winter", fruehling: "Frühling", sommer: "Sommer", herbst: "Herbst" };
   const SEASON_TIP = {
-    winter: "Heizungsluft und Kälte entziehen der Haut Feuchtigkeit – setz auf reichhaltigere Pflege. Sonnenschutz morgens trotzdem nicht vergessen, vor allem bei viel Zeit draußen.",
-    herbst: "Die Haut stellt sich auf trockene Heizungsluft um: Feuchtigkeit nachlegen, Peelings eher sanft dosieren.",
-    fruehling: "Die UV-Strahlung steigt schnell an – jetzt wieder konsequent LSF tragen und auf leichtere Texturen wechseln.",
-    sommer: "Leichte Texturen, hoher LSF und regelmäßiges Nachcremen. Abends gründlich reinigen (Sonnencreme, Schweiß).",
+    winter: "Heizungsluft und Kälte entziehen der Haut Feuchtigkeit. Setz auf reichhaltigere Pflege und vergiss den Sonnenschutz am Morgen trotzdem nicht.",
+    herbst: "Die Haut stellt sich auf trockene Heizungsluft um. Leg bei der Feuchtigkeit nach und dosiere Peelings eher sanft.",
+    fruehling: "Die UV-Strahlung steigt schnell an. Trag jetzt wieder konsequent LSF und wechsle zu leichteren Texturen.",
+    sommer: "Leichte Texturen, hoher LSF und regelmäßiges Nachcremen. Abends gründlich reinigen, um Sonnencreme und Schweiß zu entfernen.",
   };
   const CONCERN_LABEL = { unreinheiten: "Unreinheiten", trockenheit: "Trockenheit", roetungen: "Rötungen", glanz: "Glanz", falten: "Fältchen", pigmentflecken: "Pigmentflecken", sonnenschutz: "UV-Schutz" };
-  const SKIN_LABEL = { trocken: "trockene Haut", fettig: "fettige Haut", mischhaut: "Mischhaut", normal: "normale Haut" };
-  const STEP_LABEL = { reinigung: "Reinigen", serum: "Serum", pflege: "Pflegen", sonnenschutz: "Sonnenschutz" };
+  const SKIN_LABEL = { trocken: "Trockene Haut", fettig: "Fettige Haut", mischhaut: "Mischhaut", normal: "Ausgeglichene Haut" };
+  const SKIN_WHY = { trocken: "trockener Haut", fettig: "fettiger Haut", mischhaut: "Mischhaut", normal: "ausgeglichener Haut" };
+  const STEP_LABEL = { abschminken: "Abschminken", reinigung: "Reinigen", serum: "Serum", pflege: "Pflegen", sonnenschutz: "Sonnenschutz" };
 
-  const answers = { skinType: null, concerns: new Set(), sensitive: null, outdoor: null, budget: null };
+  // Fragen des Haut-Checks. single = eine Antwort (springt automatisch weiter), multi = mehrere.
+  const QUESTIONS = [
+    { key: "skinType", title: "Wie fühlt sich deine Haut im Laufe des Tages an?", options: [
+      { v: "trocken", l: "Trocken", d: "Spannt, wirkt manchmal schuppig" },
+      { v: "fettig", l: "Fettig", d: "Glänzt im ganzen Gesicht" },
+      { v: "mischhaut", l: "Mischhaut", d: "Stirn, Nase und Kinn glänzen, Wangen sind eher trocken" },
+      { v: "normal", l: "Ausgeglichen", d: "Weder besonders trocken noch fettig" } ] },
+    { key: "afterWash", title: "Und eine Stunde nach dem Waschen, ohne Creme?", options: [
+      { v: "spannt", l: "Sie spannt", d: "Ich will sofort eincremen" },
+      { v: "angenehm", l: "Fühlt sich angenehm an", d: "Kein besonderes Gefühl" },
+      { v: "glaenzt", l: "Sie glänzt schon wieder", d: "Vor allem in der T-Zone" } ] },
+    { key: "concerns", multi: true, title: "Woran möchtest du gerade arbeiten?", hint: "Wähle alles, was zutrifft.", options: [
+      { v: "unreinheiten", l: "Pickel und Unreinheiten" },
+      { v: "trockenheit", l: "Trockene Stellen" },
+      { v: "roetungen", l: "Rötungen" },
+      { v: "glanz", l: "Glanz und große Poren" },
+      { v: "falten", l: "Erste Fältchen" },
+      { v: "pigmentflecken", l: "Pigmentflecken" } ] },
+    { key: "sensitive", title: "Reagiert deine Haut empfindlich?", hint: "Zum Beispiel mit Brennen, Jucken oder Rötungen nach neuen Produkten.", options: [
+      { v: "ja", l: "Ja, oft" }, { v: "manchmal", l: "Manchmal" }, { v: "nein", l: "Nein, kaum" } ] },
+    { key: "fragrance", title: "Wie verträgst du Duftstoffe in Pflegeprodukten?", options: [
+      { v: "ok", l: "Problemlos" },
+      { v: "ohne", l: "Lieber ohne", d: "Wir empfehlen dann nur parfümfreie Produkte" },
+      { v: "unsicher", l: "Weiß ich nicht" } ] },
+    { key: "age", title: "Wie alt bist du?", hint: "Die Haut verändert sich mit den Jahren, das beeinflusst die passenden Wirkstoffe.", options: [
+      { v: "u20", l: "Unter 20" }, { v: "20", l: "20 bis 29" }, { v: "30", l: "30 bis 39" }, { v: "40", l: "40 oder älter" } ] },
+    { key: "makeup", title: "Wie oft trägst du Make-up?", options: [
+      { v: "taeglich", l: "Täglich" }, { v: "manchmal", l: "Ab und zu" }, { v: "selten", l: "Selten oder nie" } ] },
+    { key: "outdoor", title: "Wie viel Zeit verbringst du draußen?", options: [
+      { v: "wenig", l: "Kaum", d: "Meist drinnen, Büro oder Uni" },
+      { v: "mittel", l: "Täglich etwas", d: "Wege zu Fuß oder mit dem Rad" },
+      { v: "viel", l: "Viel", d: "Sport oder Arbeit draußen" } ] },
+    { key: "sleep", title: "Wie geht es dir gerade mit Schlaf und Stress?", options: [
+      { v: "gut", l: "Gut", d: "Meist 7 bis 8 Stunden Schlaf" },
+      { v: "wenig", l: "Zu wenig Schlaf", d: "Oft unter 6 Stunden" },
+      { v: "stress", l: "Viel Stress", d: "Prüfungen, Job oder Unruhe" } ] },
+    { key: "routine", title: "Wie viel Zeit möchtest du in deine Routine stecken?", options: [
+      { v: "minimal", l: "So wenig wie möglich", d: "2 bis 3 Schritte" },
+      { v: "normal", l: "Ausgewogen", d: "3 bis 4 Schritte" },
+      { v: "ausfuehrlich", l: "Gerne ausführlich", d: "Ich nehme mir Zeit" } ] },
+    { key: "budget", title: "Wie viel möchtest du pro Produkt ausgeben?", options: [
+      { v: "15", l: "Bis 15 €" }, { v: "30", l: "Bis 30 €" }, { v: "999", l: "Egal" } ] },
+  ];
 
-  function scoreProduct(p, a, slot, sea) {
-    const minPrice = Math.min(...Object.values(p.prices));
-    if (minPrice > Number(a.budget)) return null;
+  const answers = {};
+  let qIndex = 0;
+
+  // Antworten in ein Hautprofil übersetzen
+  function profileFrom(a) {
+    let skinType = a.skinType;
+    if (skinType === "normal" && a.afterWash === "glaenzt") skinType = "mischhaut";
+    if (skinType === "normal" && a.afterWash === "spannt") skinType = "trocken";
+    const weights = {};
+    (a.concerns || []).forEach((c) => { weights[c] = 2; });
+    if (a.afterWash === "spannt") weights.trockenheit = Math.max(weights.trockenheit || 0, 1);
+    if (a.afterWash === "glaenzt") weights.glanz = Math.max(weights.glanz || 0, 1);
+    if (a.age === "30" || a.age === "40") weights.falten = Math.max(weights.falten || 0, a.age === "40" ? 1.5 : 1);
+    if (a.outdoor === "viel") weights.pigmentflecken = Math.max(weights.pigmentflecken || 0, 1);
+    return {
+      skinType,
+      weights,
+      sensitive: a.sensitive,
+      noFragrance: a.fragrance === "ohne" || a.sensitive === "ja",
+      noActives: a.sensitive === "ja" || a.age === "u20",
+      budget: Number(a.budget),
+      routine: a.routine,
+    };
+  }
+
+  function scoreProduct(p, pr, slot, sea, strict) {
+    if (Math.min(...Object.values(p.prices)) > pr.budget) return null;
     if (p.time !== "beides" && p.time !== slot) return null;
-    let s = p.time === slot ? 1 : 0; // Produkte, die speziell für die Tageszeit gedacht sind, leicht bevorzugen
-    const why = [];
-    if (p.skin.includes(a.skinType)) { s += 3; why.push(`passt zu ${SKIN_LABEL[a.skinType]}`); }
-    const hits = p.concerns.filter((c) => a.concerns.has(c));
-    s += hits.length * 2;
-    if (hits.length) why.push(hits.map((c) => CONCERN_LABEL[c]).join(", "));
     const ff = p.tags.includes("parfuemfrei");
-    if (a.sensitive === "ja") { s += ff ? 3 : -3; }
-    if (a.sensitive === "manchmal" && ff) s += 1;
-    if (ff && a.sensitive !== "nein") why.push("parfümfrei");
-    if ((sea === "winter" || sea === "herbst") && p.tags.includes("reichhaltig") && a.skinType !== "fettig") { s += 1.5; why.push("reichhaltig für die Heizungssaison"); }
+    if (strict && pr.noFragrance && !ff) return null;
+    if (strict && pr.noActives && p.tags.includes("aktiv")) return null;
+    let s = p.time === slot ? 1 : 0;
+    const why = [];
+    if (p.skin.includes(pr.skinType)) { s += 3; why.push(`passt zu ${SKIN_WHY[pr.skinType]}`); }
+    const hits = p.concerns.filter((c) => pr.weights[c]);
+    hits.forEach((c) => { s += pr.weights[c]; });
+    if (hits.length) why.push(hits.map((c) => CONCERN_LABEL[c]).join(", "));
+    if (pr.sensitive === "ja") s += ff ? 3 : -3;
+    if (pr.sensitive === "manchmal" && ff) s += 1;
+    if (ff && (pr.noFragrance || pr.sensitive !== "nein")) why.push("parfümfrei");
+    if ((sea === "winter" || sea === "herbst") && p.tags.includes("reichhaltig") && pr.skinType !== "fettig") { s += 1.5; why.push("reichhaltig für die Heizungssaison"); }
     if ((sea === "sommer" || sea === "fruehling") && p.tags.includes("leicht")) { s += 1.5; why.push("leichte Textur"); }
     // Verfügbarkeit in der Nähe leicht bevorzugen
     const near = STORES.filter((st) => p.chains.includes(st.chain) && km(state.user, st) < 4)
       .map((st) => stockFor(st, p)).filter((x) => x.status !== "out").length;
     s += Math.min(near, 4) * 0.25;
-    return { p, s, why };
+    return { p, s, why, relaxed: !strict && pr.noFragrance && !ff };
   }
 
-  function pick(category, slot, a, sea, exclude = new Set()) {
-    return PRODUCTS.filter((p) => p.category === category && !exclude.has(p.id))
-      .map((p) => scoreProduct(p, a, slot, sea))
-      .filter(Boolean)
-      .sort((x, y) => y.s - x.s)[0] || null;
+  function pick(filter, slot, pr, sea, exclude = new Set()) {
+    const run = (strict) => PRODUCTS.filter((p) => filter(p) && !exclude.has(p.id))
+      .map((p) => scoreProduct(p, pr, slot, sea, strict)).filter(Boolean).sort((x, y) => y.s - x.s)[0];
+    return run(true) || run(false) || null;
   }
+  const inCat = (cat) => (p) => p.category === cat;
 
   function nearestAvailable(p) {
     return STORES.filter((s) => p.chains.includes(s.chain))
@@ -401,19 +470,32 @@
 
   function buildRoutine(a) {
     const sea = season();
+    const pr = profileFrom(a);
+    const minimal = pr.routine === "minimal", full = pr.routine === "ausfuehrlich";
+    const hasConcerns = Object.keys(pr.weights).length > 0;
     const morning = [], evening = [];
-    morning.push(["reinigung", pick("reinigung", "morgens", a, sea)]);
-    const mSerum = a.concerns.size ? pick("serum", "morgens", a, sea) : null;
+
+    if (!minimal) morning.push(["reinigung", pick(inCat("reinigung"), "morgens", pr, sea)]);
+    const mSerum = !minimal && (hasConcerns || full) ? pick(inCat("serum"), "morgens", pr, sea) : null;
     if (mSerum) morning.push(["serum", mSerum]);
-    morning.push(["pflege", pick("pflege", "morgens", a, sea)]);
-    morning.push(["sonnenschutz", pick("sonnenschutz", "morgens", a, sea)]);
-    evening.push(["reinigung", pick("reinigung", "abends", a, sea)]);
-    const eSerum = pick("serum", "abends", a, sea, new Set(mSerum ? [mSerum.p.id] : []));
-    if (eSerum) evening.push(["serum", eSerum]);
-    evening.push(["pflege", pick("pflege", "abends", a, sea)]);
+    morning.push(["pflege", pick(inCat("pflege"), "morgens", pr, sea)]);
+    morning.push(["sonnenschutz", pick(inCat("sonnenschutz"), "morgens", pr, sea)]);
+
+    const doubleCleanse = a.makeup === "taeglich" || (a.makeup === "manchmal" && full);
+    let remover = null;
+    if (doubleCleanse) {
+      remover = pick((p) => p.remover, "abends", pr, sea);
+      if (remover) evening.push(["abschminken", remover]);
+    }
+    evening.push(["reinigung", pick((p) => p.category === "reinigung" && !(remover && p.remover), "abends", pr, sea)]);
+    if (!minimal) {
+      const eSerum = pick(inCat("serum"), "abends", pr, sea, new Set(mSerum ? [mSerum.p.id] : []));
+      if (eSerum) evening.push(["serum", eSerum]);
+    }
+    evening.push(["pflege", pick(inCat("pflege"), "abends", pr, sea)]);
 
     const stepHtml = ([cat, r], i) => {
-      if (!r) return `<li class="step"><span class="step-n">${i + 1}</span><div><b>${STEP_LABEL[cat]}</b><br><span class="muted">Kein passendes Produkt im Budget gefunden.</span></div></li>`;
+      if (!r) return `<li class="step"><span class="step-n">${i + 1}</span><div class="step-body"><div class="step-cat">${STEP_LABEL[cat]}</div><span class="muted">Kein passendes Produkt in deinem Budget gefunden.</span></div></li>`;
       const near = nearestAvailable(r.p);
       const where = near ? `${PIN}${esc(CHAINS[near.s.chain].name)} ${esc(near.s.area)} · ${fmtKm(near.d)}` : "Gerade nirgends vorrätig";
       return `
@@ -423,66 +505,134 @@
             <div class="step-cat">${STEP_LABEL[cat]}</div>
             <div class="step-prod"><b>${esc(r.p.brand)}</b> ${esc(r.p.name)}</div>
             ${r.why.length ? `<div class="step-why">${esc(r.why.join(" · "))}</div>` : ""}
-            <div class="step-where">${where}</div>
+            ${r.relaxed ? `<div class="step-why warn">Enthält möglicherweise Duftstoffe. Im Budget gab es keine parfümfreie Alternative.</div>` : ""}
+            <div class="step-foot">
+              <span class="step-where">${where}</span>
+              <button type="button" class="ghost-btn" data-find="${r.p.id}">Finden</button>
+            </div>
           </div>
-          <button type="button" class="ghost-btn" data-find="${r.p.id}">Finden</button>
         </li>`;
     };
 
-    const extra = [];
-    if (a.outdoor === "viel") extra.push("Du bist viel draußen: Sonnenschutz alle 2 Stunden nachlegen.");
-    if (a.concerns.has("unreinheiten") && a.sensitive === "ja") extra.push("Bei empfindlicher Haut Wirkstoffe wie BHA langsam einführen (2–3× pro Woche).");
-    if (a.concerns.has("roetungen")) extra.push("Bei anhaltenden Rötungen lieber dermatologisch abklären lassen.");
+    const all = [...morning, ...evening].map(([, r]) => r).filter(Boolean);
+    const tips = [];
+    if (doubleCleanse) tips.push("Abends doppelt reinigen: erst mit Mizellenwasser Make-up und Sonnencreme lösen, dann mit dem Waschgel nachreinigen.");
+    if (all.some((r) => r.p.tags.includes("aktiv"))) tips.push("Starte mit neuen Wirkstoffen wie Retinol oder BHA langsam, an 2 bis 3 Abenden pro Woche. Morgens dann immer LSF benutzen.");
+    if (a.outdoor === "viel") tips.push("Du bist viel draußen. Trag den Sonnenschutz alle zwei Stunden neu auf, auch im Winter.");
+    if (a.sleep === "wenig") tips.push("Zu wenig Schlaf zeigt sich oft als fahle Haut und Augenringe. Feuchtigkeit hilft kurzfristig, ausreichend Schlaf hilft langfristig mehr.");
+    if (a.sleep === "stress") tips.push("Stress kann Unreinheiten und Rötungen verstärken. Bleib bei einer einfachen Routine und probier nicht zu viele neue Produkte gleichzeitig aus.");
+    if (pr.weights.roetungen) tips.push("Wenn Rötungen länger anhalten, lass sie am besten dermatologisch abklären.");
+    if (minimal) tips.push("Deine Routine ist bewusst kurz gehalten. Wenn du mehr willst, kannst du später ein Serum ergänzen.");
 
-    $("#routine").innerHTML = `
-      <div class="season-tip"><b>Tipp für ${SEASON_LABEL[sea]}:</b> ${SEASON_TIP[sea]}</div>
+    const explicit = (a.concerns || []).map((c) => CONCERN_LABEL[c]);
+    const focus = (explicit.length ? explicit : Object.keys(pr.weights).map((c) => CONCERN_LABEL[c])).slice(0, 3);
+    const sensLabel = { ja: "Empfindlich", manchmal: "Leicht empfindlich", nein: "Robust" }[pr.sensitive];
+
+    $("#skin-result").innerHTML = `
+      <div class="result-head">
+        <p class="eyebrow">Dein Ergebnis</p>
+        <h2>${esc(SKIN_LABEL[pr.skinType])}${focus.length ? `, Fokus auf ${esc(focus.join(" und ").replace(/ und (?=.* und )/, ", "))}` : ""}</h2>
+        <div class="profile-tags">
+          <span>${esc(sensLabel)}</span>
+          ${pr.noFragrance ? "<span>Parfümfrei</span>" : ""}
+          <span>${esc(SEASON_NAME[sea])}-Routine</span>
+          <span>${pr.budget > 100 ? "Ohne Budgetgrenze" : `Bis ${pr.budget} € pro Produkt`}</span>
+        </div>
+      </div>
+      <div class="season-tip"><b>${esc(SEASON_NAME[sea])}:</b> ${SEASON_TIP[sea]}</div>
       <div class="routine-cols">
         <div class="routine-col"><h3>${SUN}Morgens</h3><ol>${morning.map(stepHtml).join("")}</ol></div>
         <div class="routine-col"><h3>${MOON}Abends</h3><ol>${evening.map(stepHtml).join("")}</ol></div>
       </div>
-      ${extra.length ? `<ul class="extra">${extra.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+      ${tips.length ? `<div class="tips"><h3>Gut zu wissen</h3><ul>${tips.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>` : ""}
       <p class="disclaimer">Diese Empfehlungen ersetzen keine ärztliche oder dermatologische Beratung.</p>
-      <button type="button" class="link-btn" id="routine-reset">Fragebogen neu starten</button>`;
-    $("#routine").hidden = false;
-    $("#routine").scrollIntoView({ behavior: "smooth", block: "start" });
+      <button type="button" class="secondary-btn" id="quiz-restart">Haut-Check neu starten</button>`;
+    showSkinView("result");
+  }
+
+  // ---------- Fragebogen (Schritt für Schritt) ----------
+  function showSkinView(view) {
+    ["intro", "quiz", "result"].forEach((v) => { $(`#skin-${v}`).hidden = v !== view; });
+    window.scrollTo({ top: 0 });
+  }
+
+  function renderQuestion() {
+    const q = QUESTIONS[qIndex];
+    const total = QUESTIONS.length;
+    const selected = q.multi ? new Set(answers[q.key] || []) : answers[q.key];
+    $("#quiz-progress").style.width = `${((qIndex + 1) / total) * 100}%`;
+    $("#quiz-count").textContent = `Frage ${qIndex + 1} von ${total}`;
+    $("#quiz-body").innerHTML = `
+      <h2 class="q-title" id="q-title">${esc(q.title)}</h2>
+      ${q.hint ? `<p class="q-hint">${esc(q.hint)}</p>` : ""}
+      <div class="options ${q.multi ? "multi" : ""}" role="${q.multi ? "group" : "radiogroup"}" aria-labelledby="q-title">
+        ${q.options.map((o) => {
+          const on = q.multi ? selected.has(o.v) : selected === o.v;
+          return `<button type="button" class="option ${on ? "on" : ""}" data-v="${o.v}" role="${q.multi ? "checkbox" : "radio"}" aria-checked="${on}">
+            <span class="o-text"><span class="o-label">${esc(o.l)}</span>${o.d ? `<span class="o-desc">${esc(o.d)}</span>` : ""}</span>
+            <span class="o-check" aria-hidden="true"></span>
+          </button>`;
+        }).join("")}
+      </div>`;
+    const next = $("#quiz-next");
+    next.hidden = !q.multi && !selected;
+    next.textContent = qIndex === total - 1 ? "Ergebnis anzeigen" : q.multi && !selected.size ? "Überspringen" : "Weiter";
+    $("#quiz-back").textContent = qIndex === 0 ? "Abbrechen" : "Zurück";
+    $("#quiz-body").classList.remove("enter");
+    void $("#quiz-body").offsetWidth;
+    $("#quiz-body").classList.add("enter");
+  }
+
+  function nextQuestion() {
+    if (qIndex < QUESTIONS.length - 1) { qIndex++; renderQuestion(); }
+    else buildRoutine(answers);
   }
 
   function initSkin() {
-    $("#season-label").textContent = SEASON_LABEL[season()];
-    document.querySelectorAll(".choices").forEach((group) => {
-      group.addEventListener("click", (e) => {
-        const btn = e.target.closest("button");
-        if (!btn) return;
-        const { name, type } = group.dataset;
-        const v = btn.dataset.value;
-        if (type === "multi") {
-          btn.classList.toggle("on");
-          answers[name].has(v) ? answers[name].delete(v) : answers[name].add(v);
-        } else {
-          group.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b === btn));
-          answers[name] = v;
-        }
-      });
+    $("#season-name").textContent = SEASON_NAME[season()];
+    $("#quiz-total").textContent = QUESTIONS.length;
+    $("#quiz-start").addEventListener("click", () => { qIndex = 0; showSkinView("quiz"); renderQuestion(); });
+    $("#quiz-back").addEventListener("click", () => {
+      if (qIndex === 0) { showSkinView("intro"); return; }
+      qIndex--; renderQuestion();
     });
-    $("#skin-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const missing = ["skinType", "sensitive", "outdoor", "budget"].filter((k) => !answers[k]);
-      const err = $("#skin-error");
-      if (missing.length) { err.textContent = "Bitte beantworte die Fragen 1, 3, 4 und 5."; err.hidden = false; return; }
-      err.hidden = true;
-      buildRoutine(answers);
-    });
-    $("#routine").addEventListener("click", (e) => {
-      const find = e.target.closest("[data-find]");
-      if (find) { switchTab("tab-search"); selectProduct(find.dataset.find); return; }
-      if (e.target.id === "routine-reset") {
-        answers.skinType = answers.sensitive = answers.outdoor = answers.budget = null;
-        answers.concerns.clear();
-        document.querySelectorAll(".choices button.on").forEach((b) => b.classList.remove("on"));
-        $("#routine").hidden = true;
-        $("#skin-form").scrollIntoView({ behavior: "smooth" });
+    $("#quiz-next").addEventListener("click", nextQuestion);
+    $("#quiz-body").addEventListener("click", (e) => {
+      const btn = e.target.closest(".option");
+      if (!btn) return;
+      const q = QUESTIONS[qIndex];
+      if (q.multi) {
+        const set = new Set(answers[q.key] || []);
+        set.has(btn.dataset.v) ? set.delete(btn.dataset.v) : set.add(btn.dataset.v);
+        answers[q.key] = [...set];
+        renderQuestionKeepAnim();
+      } else {
+        answers[q.key] = btn.dataset.v;
+        document.querySelectorAll("#quiz-body .option").forEach((b) => {
+          b.classList.toggle("on", b === btn); b.setAttribute("aria-checked", b === btn);
+        });
+        setTimeout(nextQuestion, 220);
       }
     });
+    $("#skin-result").addEventListener("click", (e) => {
+      const find = e.target.closest("[data-find]");
+      if (find) { switchTab("tab-search"); selectProduct(find.dataset.find); return; }
+      if (e.target.id === "quiz-restart") {
+        Object.keys(answers).forEach((k) => delete answers[k]);
+        showSkinView("intro");
+      }
+    });
+  }
+
+  // Bei Mehrfachauswahl nur Häkchen und Button aktualisieren, ohne Einblend-Animation
+  function renderQuestionKeepAnim() {
+    const q = QUESTIONS[qIndex];
+    const set = new Set(answers[q.key] || []);
+    document.querySelectorAll("#quiz-body .option").forEach((b) => {
+      const on = set.has(b.dataset.v);
+      b.classList.toggle("on", on); b.setAttribute("aria-checked", on);
+    });
+    $("#quiz-next").textContent = qIndex === QUESTIONS.length - 1 ? "Ergebnis anzeigen" : set.size ? "Weiter" : "Überspringen";
   }
 
   // ---------- Tabs ----------
