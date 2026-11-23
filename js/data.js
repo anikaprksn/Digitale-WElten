@@ -231,8 +231,97 @@ PRODUCTS.push(
     chains: ["dm", "rossmann"], prices: { dm: 4.45, rossmann: 4.49 }, hair: H(["glatt", "wellig"], ["fein", "mittel"], ["fettig"], ["volumen"]), tags: [] },
   { id: "briogeo-scalp", area: "haar", brand: "Briogeo", name: "Scalp Revival Charcoal + Coconut Oil Micro-Exfoliating Shampoo", category: "kopfhaut",
     chains: ["sephora"], prices: { sephora: 39.00 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["fettig", "schuppen", "trocken"], ["kopfhaut"]), tags: [] },
+  { id: "plantur39-shampoo", area: "haar", brand: "Plantur 39", name: "Phyto-Coffein-Shampoo 250 ml", category: "shampoo",
+    chains: ["dm", "rossmann"], prices: { dm: 6.95, rossmann: 6.99 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "fettig", "trocken"], ["dichte", "kopfhaut"]), tags: [] },
+  { id: "alpecin-liquid", area: "haar", brand: "Alpecin", name: "Coffein Liquid Kopfhaut-Tonikum 200 ml", category: "kopfhaut",
+    chains: ["dm", "rossmann"], prices: { dm: 9.95, rossmann: 9.99 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["normal", "fettig", "trocken"], ["dichte", "kopfhaut"]), tags: [] },
   { id: "balea-kopfhaut-serum", area: "haar", brand: "Balea", name: "Kopfhaut-Serum beruhigend 50 ml", category: "kopfhaut",
     chains: ["dm"], prices: { dm: 3.95 }, hair: H(ALL_TYPES, ["fein", "mittel", "dick"], ["trocken", "schuppen"], ["kopfhaut"]), tags: [] },
 );
 
 const POPULAR = ["cerave-creme", "to-niacinamide", "lrp-uvmune", "rare-blush", "balea-hyaluron"];
+
+// ---------- Erweiterung: weitere Produkte (Demo-Preise, ca.) ----------
+const SK = (id, brand, name, category, chains, prices, skin, concerns, tags, time, extra = {}) =>
+  ({ id, brand, name, category, chains, prices, skin, concerns, tags, time, ...extra });
+const MU = (id, brand, name, chains, prices) =>
+  ({ id, brand, name, category: "makeup", chains, prices, skin: [], concerns: [], tags: [], time: null });
+const HP = (id, brand, name, category, chains, prices, hair, tags = []) =>
+  ({ id, area: "haar", brand, name, category, chains, prices, hair, tags });
+const DRO = ["dm", "rossmann"];
+const ALLT = ["glatt", "wellig", "lockig", "kraus"], ALLTH = ["fein", "mittel", "dick"];
+
+PRODUCTS.push(
+  // Hautpflege
+  SK("cerave-hydrating-cleanser", "CeraVe", "Feuchtigkeitsspendende Reinigungslotion 236 ml", "reinigung", ["dm", "rossmann", "douglas"], { dm: 11.95, rossmann: 11.99, douglas: 13.99 }, ["trocken", "normal"], ["trockenheit", "roetungen"], ["parfuemfrei", "glycerin"], "beides"),
+  SK("lrp-toleriane-cleanser", "La Roche-Posay", "Toleriane Sanftes Reinigungsfluid 400 ml", "reinigung", ["dm", "rossmann", "douglas"], { dm: 17.95, rossmann: 17.99, douglas: 19.99 }, ["trocken", "normal", "mischhaut"], ["roetungen", "trockenheit"], ["parfuemfrei"], "beides"),
+  SK("eucerin-dermopure-gel", "Eucerin", "DermoPure Reinigungsgel 200 ml", "reinigung", ["dm", "rossmann", "douglas"], { dm: 12.95, rossmann: 12.99, douglas: 14.99 }, ["fettig", "mischhaut"], ["unreinheiten", "glanz"], [], "beides"),
+  SK("bioderma-sebium-gel", "Bioderma", "Sébium Gel Moussant 200 ml", "reinigung", ["dm", "rossmann", "douglas"], { dm: 13.95, rossmann: 13.99, douglas: 15.99 }, ["fettig", "mischhaut"], ["unreinheiten", "glanz"], ["parfuemfrei"], "beides"),
+  SK("alverde-klaer-gel", "alverde", "Klärendes Waschgel Heilerde 150 ml", "reinigung", ["dm"], { dm: 2.45 }, ["fettig", "mischhaut"], ["unreinheiten", "glanz"], [], "beides"),
+  SK("to-azelaic", "The Ordinary", "Azelaic Acid Suspension 10% 30 ml", "serum", ["dm", "douglas", "sephora"], { dm: 9.95, douglas: 10.90, sephora: 10.90 }, ["fettig", "mischhaut", "normal"], ["roetungen", "unreinheiten", "pigmentflecken"], ["parfuemfrei"], "beides"),
+  SK("isana-hyaluron-booster", "Isana", "Hyaluron Booster Serum 30 ml", "feuchtigkeit", ["rossmann"], { rossmann: 3.99 }, ["trocken", "normal", "mischhaut"], ["trockenheit", "falten"], [], "beides"),
+  SK("paulas-aha-gel", "Paula's Choice", "Skin Perfecting 8% AHA Gel Exfoliant 100 ml", "peeling", ["douglas"], { douglas: 36.00 }, ["normal", "trocken", "mischhaut"], ["pigmentflecken", "falten", "trockenheit"], ["aktiv", "parfuemfrei"], "abends", { acid: "aha" }),
+  SK("neutrogena-hydroboost", "Neutrogena", "Hydro Boost Aqua Gel 50 ml", "pflege", DRO, { dm: 14.95, rossmann: 14.99 }, ["fettig", "mischhaut", "normal"], ["trockenheit"], ["leicht", "glycerin"], "beides"),
+  SK("nivea-soft", "Nivea", "Soft Erfrischende Feuchtigkeitscreme 200 ml", "pflege", DRO, { dm: 4.45, rossmann: 4.49 }, ["normal", "trocken", "mischhaut"], ["trockenheit"], ["glycerin"], "beides"),
+  SK("cerave-pm-lotion", "CeraVe", "Feuchtigkeitsspendende Nachtcreme 52 ml", "pflege", ["dm", "rossmann", "douglas"], { dm: 15.95, rossmann: 15.99, douglas: 17.99 }, ["fettig", "mischhaut", "normal"], ["unreinheiten", "glanz", "trockenheit"], ["parfuemfrei", "leicht"], "abends"),
+  SK("lrp-cicaplast", "La Roche-Posay", "Cicaplast Baume B5+ 40 ml", "pflege", ["dm", "rossmann", "douglas"], { dm: 11.95, rossmann: 11.99, douglas: 13.99 }, ["trocken", "normal", "mischhaut"], ["roetungen", "trockenheit"], ["parfuemfrei", "reichhaltig"], "abends"),
+  SK("kiehls-ufc", "Kiehl's", "Ultra Facial Cream 50 ml", "pflege", ["douglas", "sephora"], { douglas: 34.00, sephora: 34.00 }, ["trocken", "normal"], ["trockenheit"], ["glycerin", "reichhaltig"], "beides"),
+  SK("isdin-fusion-water", "ISDIN", "Fusion Water Magic LSF 50 50 ml", "sonnenschutz", ["douglas"], { douglas: 29.95 }, ["fettig", "mischhaut", "normal", "trocken"], ["sonnenschutz", "pigmentflecken"], ["leicht"], "morgens"),
+  SK("balea-spf-fluid", "Balea", "Sonnenfluid Gesicht LSF 50 50 ml", "sonnenschutz", ["dm"], { dm: 3.95 }, ["normal", "mischhaut", "fettig"], ["sonnenschutz"], ["leicht"], "morgens"),
+
+  // Make-up
+  MU("maybelline-fitme", "Maybelline", "Fit Me Matte + Poreless Foundation", ["dm", "rossmann", "douglas"], { dm: 9.95, rossmann: 9.99, douglas: 11.99 }),
+  MU("loreal-truematch", "L'Oréal Paris", "True Match Foundation", ["dm", "rossmann", "douglas"], { dm: 12.95, rossmann: 12.99, douglas: 14.99 }),
+  MU("essence-camouflage", "essence", "Camouflage+ Matt Concealer", DRO, { dm: 3.95, rossmann: 3.95 }),
+  MU("catrice-lashchanger", "Catrice", "Lash Changer Volume Mascara", DRO, { dm: 4.95, rossmann: 4.99 }),
+  MU("maybelline-lifter", "Maybelline", "Lifter Gloss", ["dm", "rossmann", "douglas"], { dm: 9.95, rossmann: 9.99, douglas: 11.99 }),
+  MU("nars-concealer", "NARS", "Radiant Creamy Concealer", ["douglas", "sephora"], { douglas: 33.00, sephora: 33.00 }),
+  MU("benefit-gimmebrow", "Benefit", "Gimme Brow+ Volumizing Brow Gel", ["douglas", "sephora"], { douglas: 27.00, sephora: 27.00 }),
+  MU("ct-pillowtalk", "Charlotte Tilbury", "Matte Revolution Lipstick Pillow Talk", ["douglas"], { douglas: 36.00 }),
+  MU("fenty-profiltr", "Fenty Beauty", "Pro Filt'r Soft Matte Foundation", ["sephora"], { sephora: 38.00 }),
+  MU("rare-luminizer", "Rare Beauty", "Positive Light Liquid Luminizer", ["sephora"], { sephora: 28.00 }),
+
+  // Haare – Shampoo
+  HP("schauma-kraft", "Schauma", "Kraft & Vitalität Shampoo 400 ml", "shampoo", DRO, { dm: 1.45, rossmann: 1.49 }, H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["glanz"])),
+  HP("guhl-volumen-shampoo", "Guhl", "Langzeit Volumen Shampoo 250 ml", "shampoo", DRO, { dm: 4.45, rossmann: 4.49 }, H(["glatt", "wellig"], ["fein"], ["normal", "fettig"], ["volumen"])),
+  HP("isana-repair-shampoo", "Isana Professional", "Repair Shampoo 300 ml", "shampoo", ["rossmann"], { rossmann: 1.79 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken"], ["reparatur"])),
+  HP("pantene-repair-shampoo", "Pantene Pro-V", "Repair & Care Shampoo 300 ml", "shampoo", DRO, { dm: 3.95, rossmann: 3.99 }, H(["glatt", "wellig"], ["mittel", "dick"], ["normal", "trocken"], ["reparatur", "glanz"])),
+  HP("fructis-banane-shampoo", "Garnier Fructis", "Hair Food Banane Shampoo 350 ml", "shampoo", DRO, { dm: 4.45, rossmann: 4.49 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken"], ["feuchtigkeit"])),
+  HP("balea-locken-shampoo", "Balea", "Locken Shampoo 300 ml", "shampoo", ["dm"], { dm: 1.25 }, H(["wellig", "lockig"], ["fein", "mittel"], ["normal"], ["locken", "frizz"])),
+  HP("seborin-coffein", "Seborin", "Coffein Shampoo gegen Haarausfall 250 ml", "shampoo", DRO, { dm: 3.95, rossmann: 3.99 }, H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["dichte", "kopfhaut"])),
+  HP("kerastase-bain-satin", "Kérastase", "Nutritive Bain Satin Shampoo 250 ml", "shampoo", ["douglas"], { douglas: 32.95 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken"], ["feuchtigkeit", "glanz"])),
+  HP("redken-abc-shampoo", "Redken", "Acidic Bonding Concentrate Shampoo 300 ml", "shampoo", ["douglas"], { douglas: 29.90 }, H(ALLT, ALLTH, ["normal", "trocken"], ["reparatur", "farbe"], { color: true }), ["sulfatfrei"]),
+  HP("davines-oi-shampoo", "Davines", "OI Shampoo 250 ml", "shampoo", ["douglas"], { douglas: 26.50 }, H(ALLT, ALLTH, ["normal"], ["glanz", "frizz"]), ["sulfatfrei"]),
+
+  // Haare – Spülung
+  HP("gliss-repair-spuelung", "Gliss", "Ultimate Repair Spülung 200 ml", "spuelung", DRO, { dm: 3.45, rossmann: 3.49 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken", "fettig"], ["reparatur"])),
+  HP("isana-repair-spuelung", "Isana Professional", "Repair Spülung 300 ml", "spuelung", ["rossmann"], { rossmann: 1.79 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken"], ["reparatur", "feuchtigkeit"])),
+  HP("guhl-volumen-spuelung", "Guhl", "Langzeit Volumen Spülung 200 ml", "spuelung", DRO, { dm: 4.45, rossmann: 4.49 }, H(["glatt", "wellig"], ["fein"], ["normal", "fettig"], ["volumen"]), ["leicht"]),
+  HP("olaplex-5", "Olaplex", "No. 5 Bond Maintenance Conditioner 250 ml", "spuelung", ["douglas"], { douglas: 29.95 }, H(ALLT, ALLTH, ["normal", "trocken", "fettig"], ["reparatur", "farbe"], { color: true })),
+  HP("fructis-banane-spuelung", "Garnier Fructis", "Hair Food Banane Spülung 200 ml", "spuelung", DRO, { dm: 4.45, rossmann: 4.49 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken"], ["feuchtigkeit", "frizz"])),
+
+  // Haare – Kur
+  HP("gliss-repair-kur", "Gliss", "Ultimate Repair Kur 300 ml", "maske", DRO, { dm: 4.95, rossmann: 4.99 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken", "fettig"], ["reparatur"])),
+  HP("balea-plex-maske", "Balea Professional", "Plex Bond Repair Maske 150 ml", "maske", ["dm"], { dm: 3.95 }, H(ALLT, ALLTH, ["normal", "trocken", "fettig"], ["reparatur", "farbe"], { color: true })),
+  HP("fructis-kokos-maske", "Garnier Fructis", "Hair Food Kokosnuss 3in1 Maske 390 ml", "maske", DRO, { dm: 6.95, rossmann: 6.99 }, H(["wellig", "lockig", "kraus"], ["mittel", "dick"], ["normal", "trocken"], ["locken", "frizz", "feuchtigkeit"])),
+  HP("redken-abc-maske", "Redken", "Acidic Bonding Concentrate Intensive Treatment 250 ml", "maske", ["douglas"], { douglas: 32.90 }, H(ALLT, ALLTH, ["normal", "trocken"], ["reparatur", "farbe"], { color: true })),
+
+  // Haare – Leave-in und Öl
+  HP("gliss-oel-elixier", "Gliss", "Öl-Elixier Ultimate Oil 75 ml", "leavein", DRO, { dm: 6.45, rossmann: 6.49 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken"], ["glanz", "frizz"])),
+  HP("balea-haaroel", "Balea Professional", "Oil Repair Haaröl 100 ml", "leavein", ["dm"], { dm: 2.95 }, H(ALLT, ["mittel", "dick"], ["normal", "trocken"], ["glanz", "frizz", "reparatur"])),
+  HP("olaplex-7", "Olaplex", "No. 7 Bonding Oil 30 ml", "leavein", ["douglas", "sephora"], { douglas: 29.95, sephora: 29.95 }, H(ALLT, ALLTH, ["normal", "trocken", "fettig"], ["glanz", "reparatur", "farbe"], { color: true })),
+  HP("cantu-curling-cream", "Cantu", "Coconut Curling Cream 340 g", "leavein", DRO, { dm: 8.95, rossmann: 8.99 }, H(["lockig", "kraus"], ["mittel", "dick"], ["normal", "trocken"], ["locken", "frizz"])),
+  HP("sheamoisture-smoothie", "SheaMoisture", "Coconut & Hibiscus Curl Enhancing Smoothie 340 g", "leavein", ["dm"], { dm: 12.95 }, H(["lockig", "kraus"], ["mittel", "dick"], ["normal", "trocken"], ["locken", "feuchtigkeit", "frizz"])),
+
+  // Haare – Hitzeschutz
+  HP("tresemme-hitzeschutz", "TRESemmé", "Hitzeschutz Spray 200 ml", "hitzeschutz", DRO, { dm: 4.95, rossmann: 4.99 }, H(ALLT, ALLTH, ["normal", "trocken", "fettig", "schuppen"], ["glanz"])),
+  HP("balea-hitzeschutz", "Balea", "Hitzeschutz Spray 150 ml", "hitzeschutz", ["dm"], { dm: 1.95 }, H(ALLT, ["fein", "mittel"], ["normal", "fettig", "trocken", "schuppen"], []), ["leicht"]),
+
+  // Haare – Styling
+  HP("got2b-powder", "got2b", "Volumen Puder Powder'ful 10 g", "styling", DRO, { dm: 4.45, rossmann: 4.49 }, H(["glatt", "wellig"], ["fein"], ["fettig", "normal"], ["volumen"])),
+  HP("taft-volumen-mousse", "Taft", "Volumen Schaumfestiger 150 ml", "styling", DRO, { dm: 2.95, rossmann: 2.99 }, H(["glatt", "wellig"], ["fein", "mittel"], ["normal", "fettig"], ["volumen"])),
+  HP("moroccanoil-curl-cream", "Moroccanoil", "Intense Curl Cream 300 ml", "styling", ["douglas"], { douglas: 33.95 }, H(["lockig", "kraus"], ["mittel", "dick"], ["normal", "trocken"], ["locken", "frizz"])),
+
+  // Haare – Kopfhaut
+  HP("to-hair-density", "The Ordinary", "Multi-Peptide Serum for Hair Density 60 ml", "kopfhaut", ["dm", "douglas", "sephora"], { dm: 19.95, douglas: 21.90, sephora: 21.90 }, H(ALLT, ALLTH, ["normal", "fettig", "trocken"], ["dichte", "kopfhaut"])),
+);

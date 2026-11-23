@@ -680,7 +680,7 @@
   // =====================================================================
   // HAAR-CHECK
   // =====================================================================
-  const HAIR_GOAL_LABEL = { volumen: "Volumen", feuchtigkeit: "Feuchtigkeit", reparatur: "Reparatur", glanz: "Glanz", locken: "definierte Locken", frizz: "weniger Frizz", farbe: "Farbschutz", kopfhaut: "Kopfhautpflege", dichte: "Fülle" };
+  const HAIR_GOAL_LABEL = { volumen: "Volumen", feuchtigkeit: "Feuchtigkeit", reparatur: "Reparatur", glanz: "Glanz", locken: "definierte Locken", frizz: "weniger Frizz", farbe: "Farbschutz", kopfhaut: "Kopfhautpflege", dichte: "Fülle", haarausfall: "Haarausfall vorbeugen" };
   const HAIR_TYPE_LABEL = { glatt: "Glattes Haar", wellig: "Welliges Haar", lockig: "Lockiges Haar", kraus: "Krauses Haar" };
   const HAIR_SEASON_TIP = {
     winter: "Heizungsluft und Mützen machen Haare trocken und elektrisch. Gönn den Längen öfter eine Kur und geh nur mit trockenen Haaren raus.",
@@ -699,6 +699,11 @@
       { v: "fein", l: "Fein", d: "Kaum zu spüren" },
       { v: "mittel", l: "Mittel", d: "Gut zu spüren" },
       { v: "dick", l: "Dick", d: "Fühlt sich kräftig an, fast wie ein Faden" } ] },
+    { key: "length", title: "Wie lang sind deine Haare?", options: [
+      { v: "kurz", l: "Kurz", d: "Bis zum Kinn" },
+      { v: "mittel", l: "Mittellang", d: "Bis zur Schulter" },
+      { v: "lang", l: "Lang", d: "Bis zur Brust oder zum Rücken" },
+      { v: "sehrlang", l: "Sehr lang", d: "Bis zur Taille oder länger" } ] },
     { key: "scalp", title: "Wie ist deine Kopfhaut?", options: [
       { v: "fettig", l: "Fettet schnell", d: "Nach 1 bis 2 Tagen strähnig" },
       { v: "normal", l: "Unauffällig" },
@@ -723,7 +728,8 @@
       { v: "frizz", l: "Weniger Frizz" },
       { v: "locken", l: "Definierte Locken" },
       { v: "farbe", l: "Farbe länger erhalten oder Gelbstich vermeiden" },
-      { v: "dichte", l: "Meine Haare wirken dünner" } ] },
+      { v: "dichte", l: "Meine Haare wirken dünner" },
+      { v: "haarausfall", l: "Haarausfall vorbeugen" } ] },
     { key: "budget", title: "Wie viel möchtest du pro Produkt ausgeben?", options: [
       { v: "10", l: "Bis 10 €" }, { v: "30", l: "Bis 30 €" }, { v: "999", l: "Egal" } ] },
   ];
@@ -741,6 +747,9 @@
     if (a.scalp === "schuppen") soft("kopfhaut", 3);
     if (a.scalp === "trocken") soft("kopfhaut", 1.5);
     if (a.scalp === "fettig" && a.thick === "fein") soft("volumen", 1);
+    if (w.haarausfall) { soft("dichte", 2.5); soft("kopfhaut", 1.5); }
+    if (a.length === "lang") { soft("reparatur", 1); soft("feuchtigkeit", 0.5); }
+    if (a.length === "sehrlang") { soft("reparatur", 1.5); soft("feuchtigkeit", 1); }
     return { ...a, w, budget: Number(a.budget) };
   }
 
@@ -770,20 +779,22 @@
     const sea = season();
     const pr = hairProfile(a);
     const curly = pr.hairType === "lockig" || pr.hairType === "kraus";
+    const short = pr.length === "kurz", long = pr.length === "lang" || pr.length === "sehrlang";
+    const lossFocus = !!(pr.w.haarausfall || (a.goals || []).includes("dichte"));
     const washDay = [], extras = [];
     const add = (list, label, r) => { if (r) list.push([label, r]); };
 
     const shampoo = pr.scalp === "schuppen"
-      ? hairPick("shampoo", pr, (p) => p.hair.goals.includes("kopfhaut"))
+      ? hairPick("shampoo", pr, (p) => p.hair.goals.includes("kopfhaut") && !p.hair.goals.includes("dichte"))
       : hairPick("shampoo", pr, (p) => !(p.hair.blondOnly));
     if (shampoo) shampoo.note = pr.wash === "taeglich" ? "Bei täglicher Wäsche einmal kurz aufschäumen reicht" : "Vor allem auf die Kopfhaut, die Längen werden beim Ausspülen mitgereinigt";
     add(washDay, "Waschen", shampoo);
     const cond = hairPick("spuelung", pr);
-    if (cond) cond.note = "Nur in Längen und Spitzen, 2 bis 3 Minuten einwirken lassen";
+    if (cond) cond.note = short ? "Eine kleine Menge reicht, nur in die Längen" : long ? "Großzügig in Längen und Spitzen, 2 bis 3 Minuten einwirken lassen" : "Nur in Längen und Spitzen, 2 bis 3 Minuten einwirken lassen";
     add(washDay, "Pflegen", cond);
-    if (curly || pr.w.glanz || pr.w.frizz || pr.lengths !== "gesund") {
+    if (curly || long || (!short && (pr.w.glanz || pr.w.frizz || pr.lengths !== "gesund"))) {
       const leave = hairPick("leavein", pr);
-      if (leave) leave.note = curly ? "Ins nasse Haar kneten, nicht trocken bürsten" : "Ein bis zwei Pumpstöße in die Spitzen";
+      if (leave) leave.note = curly ? "Ins nasse Haar kneten, nicht trocken bürsten" : long ? "In die Spitzen, bei sehr langen Haaren auch in die unteren Längen" : "Ein bis zwei Pumpstöße in die Spitzen";
       add(washDay, curly ? "Leave-in" : "Leave-in oder Öl", leave);
     }
     if (pr.heat !== "nie") {
@@ -792,7 +803,7 @@
       add(washDay, "Hitzeschutz", hp);
     }
 
-    if (pr.lengths !== "gesund" || pr.color !== "natur" || pr.heat === "taeglich" || pr.w.feuchtigkeit) {
+    if (short ? (pr.lengths === "spliss" || pr.color === "blondiert") : (long || pr.lengths !== "gesund" || pr.color !== "natur" || pr.heat === "taeglich" || pr.w.feuchtigkeit)) {
       const mask = hairPick("maske", pr);
       if (mask) mask.note = "Einmal pro Woche statt der Spülung";
       add(extras, "Kur", mask);
@@ -802,8 +813,14 @@
       if (silver) silver.note = "Einmal pro Woche gegen Gelbstich";
       add(extras, "Silbershampoo", silver);
     }
+    let lossTonic = null;
+    if (lossFocus) {
+      lossTonic = hairPick("kopfhaut", pr, (p) => p.hair.goals.includes("dichte"));
+      if (lossTonic) lossTonic.note = "Täglich auf die Kopfhaut auftragen und sanft einmassieren, nicht ausspülen";
+      add(extras, "Kopfhaut-Tonikum", lossTonic);
+    }
     if (pr.scalp === "trocken" || pr.scalp === "schuppen") {
-      const sc = hairPick("kopfhaut", pr, (p) => !shampoo || p.id !== shampoo.p.id);
+      const sc = hairPick("kopfhaut", pr, (p) => (!shampoo || p.id !== shampoo.p.id) && (!lossTonic || p.id !== lossTonic.p.id) && !p.hair.goals.includes("dichte"));
       if (sc) sc.note = "Auf die Kopfhaut auftragen, nicht ausspülen";
       add(extras, "Kopfhaut", sc);
     }
@@ -815,7 +832,13 @@
 
     const tips = [];
     if (pr.scalp === "schuppen") tips.push("Benutze das Anti-Schuppen-Shampoo 2 bis 3 Mal pro Woche. Wenn es nach 4 Wochen nicht besser wird, lass die Kopfhaut ärztlich anschauen.");
-    if (pr.w.dichte) tips.push("Wenn deine Haare dünner werden oder stark ausfallen, lass das ärztlich abklären. Shampoos können die Ursache nicht behandeln.");
+    if (lossFocus) {
+      tips.push("50 bis 100 Haare am Tag zu verlieren ist normal. Fallen deutlich mehr aus, werden die Haare sichtbar dünner oder entstehen kahle Stellen, lass das ärztlich abklären. Oft stecken zum Beispiel Eisenmangel, die Schilddrüse oder Hormone dahinter.");
+      tips.push("Vorbeugen kannst du so: straffe Zöpfe und enge Haargummis vermeiden, sanft und nur nass mit grobem Kamm entwirren, die Kopfhaut beim Waschen massieren und ausgewogen essen, mit genug Eiweiß, Eisen und Zink.");
+      tips.push("Koffein-Shampoos und -Tonika pflegen die Kopfhaut, ersetzen aber keine Behandlung.");
+    }
+    if (long) tips.push("Lange Haare brauchen Schutz in den Spitzen: alle 10 bis 12 Wochen schneiden, nachts locker flechten oder auf Seide schlafen und Haargummis ohne Metall benutzen.");
+    if (short) tips.push("Bei kurzen Haaren reicht wenig Produkt. Kur und Öl brauchst du meist nur, wenn die Haare gefärbt oder strapaziert sind.");
     if (curly) tips.push("Locken mögen Feuchtigkeit: nur nass entwirren, mit einem Mikrofaser-Tuch oder T-Shirt trocknen und möglichst wenig anfassen.");
     if (pr.heat === "taeglich") tips.push("Föhn auf mittlerer Stufe und Glätteisen höchstens auf 180 °C. Lass die Haare zwischendurch auch mal lufttrocknen.");
     if (pr.scalp === "fettig" && pr.wash === "taeglich") tips.push("Tägliches Waschen ist in Ordnung, wenn das Shampoo mild ist. Spülung und Öl gehören nur in die Längen.");
@@ -831,6 +854,7 @@
         <p class="eyebrow">Dein Ergebnis</p>
         <h2>${esc(HAIR_TYPE_LABEL[pr.hairType])}${goals.length ? `, Fokus auf ${esc(listJoin(goals.slice(0, 3)))}` : ""}</h2>
         <div class="profile-tags">
+          <span>${esc({ kurz: "Kurze Haare", mittel: "Mittellange Haare", lang: "Lange Haare", sehrlang: "Sehr lange Haare" }[pr.length])}</span>
           <span>${esc(thickLabel)}</span>
           <span>${esc(scalpLabel)}</span>
           ${pr.color !== "natur" ? `<span>${pr.color === "blondiert" ? "Blondiert" : "Gefärbt"}</span>` : ""}

@@ -53,9 +53,12 @@ Quellen: [wmn.de – 10 Must-Haves](https://www.wmn.de/lifestyle/skincare-routin
 Für eine echte Veröffentlichung sollte man Leon fragen, ob er namentlich genannt werden möchte – oder eine Kooperation anbieten.
 
 ## Haar-Check
-9 Fragen (Haarstruktur, Haardicke, Kopfhaut, Längen, Färbung, Hitze-Styling, Waschrhythmus, Wünsche, Budget) →
+10 Fragen (Haarstruktur, Haardicke, Haarlänge, Kopfhaut, Längen, Färbung, Hitze-Styling, Waschrhythmus, Wünsche, Budget) →
 Routine „Am Waschtag“ (Shampoo, Spülung, Leave-in, Hitzeschutz) und „Ab und zu“ (Kur, Silbershampoo, Kopfhaut, Trockenshampoo).
+Ziel „Haarausfall vorbeugen“: Koffein-Shampoo, Kopfhaut-Tonikum und Vorbeugetipps.
 Bei Schuppen, die nicht besser werden, und bei Haarausfall verweist die App auf ärztlichen Rat.
+
+Katalog (Demo): 116 Produkte, davon 56 Haarpflege.
 
 ## Die größte Herausforderung: echte Bestandsdaten
 dm und Rossmann zeigen Filialverfügbarkeit bereits in ihren eigenen Apps/Webseiten – es gibt aber **keine
