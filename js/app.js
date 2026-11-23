@@ -109,7 +109,7 @@
 
     // Berliner Bezirke – immer sichtbar, auch ohne Internet-Kartenkacheln
     if (typeof BERLIN_DISTRICTS !== "undefined") {
-      const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#1b2f5e";
+      const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#0d1838";
       const base = { color: accent, weight: 1.4, opacity: 0.55, fillColor: accent, fillOpacity: 0.035 };
       L.geoJSON(BERLIN_DISTRICTS, {
         style: () => base,

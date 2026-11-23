@@ -8,7 +8,7 @@
  */
 
 const CHAINS = {
-  dm:       { name: "dm",       color: "#1d4ed8" },
+  dm:       { name: "dm",       color: "#3b5bab" },
   rossmann: { name: "Rossmann", color: "#dc2626" },
   douglas:  { name: "Douglas",  color: "#0f766e" },
   sephora:  { name: "Sephora",  color: "#111827" },

@@ -6,21 +6,21 @@
 @font-face { font-family: "TeX Gyre Bonum"; src: url("../fonts/texgyrebonum-italic.woff2") format("woff2"); font-weight: 300 500; font-style: italic; font-display: swap; }
 
 :root {
-  --bg: #f3f4f8;
+  --bg: #f4f4f6;
   --surface: #ffffff;
-  --surface-2: #e8ebf2;
-  --text: #14213d;
-  --muted: #5b6684;
-  --border: #d8dce7;
-  --accent: #1b2f5e;
-  --accent-strong: #0f1d40;
-  --accent-soft: #e4e8f2;
+  --surface-2: #e8e9ee;
+  --text: #0b1430;
+  --muted: #4f5770;
+  --border: #d9dbe3;
+  --accent: #0d1838;
+  --accent-strong: #060d24;
+  --accent-soft: #e3e5ec;
   --on-accent: #ffffff;
   --ok: #1d8a52;
   --warn: #c27c0e;
   --off: #9aa2b6;
-  --map-bg: #e7eaf1;
-  --district-label: #3a4a6e;
+  --map-bg: #e8e9ee;
+  --district-label: #1c2747;
   --shadow: 0 1px 2px rgb(20 33 61 / .05), 0 8px 28px rgb(20 33 61 / .08);
   --shadow-sm: 0 1px 2px rgb(20 33 61 / .06), 0 2px 8px rgb(20 33 61 / .05);
   --font-body: "Bookman Old Style", "Bookman", "URW Bookman", "URW Bookman L", "TeX Gyre Bonum", Georgia, serif;
@@ -32,18 +32,18 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0a1122; --surface: #111a31; --surface-2: #19243f; --text: #e7ebf4; --muted: #9ba6c1;
-    --border: #25314e; --accent: #a3b8e8; --accent-strong: #c3d2f3; --accent-soft: #1b2949; --on-accent: #0a1122;
-    --ok: #46c985; --warn: #eda740; --off: #6c7792; --map-bg: #111a31; --district-label: #a9b7d6;
+    --bg: #070c1a; --surface: #0e1528; --surface-2: #161f37; --text: #e7ebf4; --muted: #9ba6c1;
+    --border: #212b45; --accent: #c2cbe0; --accent-strong: #dde3f0; --accent-soft: #18223d; --on-accent: #070c1a;
+    --ok: #46c985; --warn: #eda740; --off: #6c7792; --map-bg: #0e1528; --district-label: #b3bcd2;
     --shadow: 0 1px 2px rgb(0 0 0 / .35), 0 8px 28px rgb(0 0 0 / .4);
     --shadow-sm: 0 1px 2px rgb(0 0 0 / .3), 0 2px 8px rgb(0 0 0 / .22);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0a1122; --surface: #111a31; --surface-2: #19243f; --text: #e7ebf4; --muted: #9ba6c1;
-  --border: #25314e; --accent: #a3b8e8; --accent-strong: #c3d2f3; --accent-soft: #1b2949; --on-accent: #0a1122;
-  --ok: #46c985; --warn: #eda740; --off: #6c7792; --map-bg: #111a31; --district-label: #a9b7d6;
+  --bg: #070c1a; --surface: #0e1528; --surface-2: #161f37; --text: #e7ebf4; --muted: #9ba6c1;
+  --border: #212b45; --accent: #c2cbe0; --accent-strong: #dde3f0; --accent-soft: #18223d; --on-accent: #070c1a;
+  --ok: #46c985; --warn: #eda740; --off: #6c7792; --map-bg: #0e1528; --district-label: #b3bcd2;
   --shadow: 0 1px 2px rgb(0 0 0 / .35), 0 8px 28px rgb(0 0 0 / .4);
   --shadow-sm: 0 1px 2px rgb(0 0 0 / .3), 0 2px 8px rgb(0 0 0 / .22);
   color-scheme: dark;
@@ -79,10 +79,14 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-head); font-weight: 700; font-size: 19px; letter-spacing: 0; }
 .brand small { font-family: var(--font-body); font-weight: 500; color: var(--muted); font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
 .logo {
-  width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center;
-  background: var(--accent); color: var(--on-accent);
+  width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; flex: none;
+  background: var(--accent);
 }
-.logo svg { width: 16px; height: 16px; fill: currentColor; }
+.logo svg { width: 34px; height: 34px; }
+.logo .lg-fg { fill: var(--on-accent); }
+.logo .lg-label { fill: var(--accent); opacity: .18; }
+.logo .lg-lens { fill: var(--accent); stroke: var(--on-accent); stroke-width: 4; }
+.logo .lg-handle { stroke: var(--on-accent); stroke-width: 5.5; stroke-linecap: round; }
 .demo-badge {
   font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
   padding: 4px 10px; border-radius: 999px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--border);
@@ -243,7 +247,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 }
 .leaflet-container { font-family: var(--font-body); background: var(--map-bg); }
 /* OSM-Karte farblich an das Blau/Grau-Design angleichen */
-.base-tiles { filter: grayscale(1) sepia(.15) hue-rotate(180deg) saturate(1.6) brightness(1.04) contrast(.92); }
+.base-tiles { filter: grayscale(1) sepia(.1) hue-rotate(185deg) saturate(1.1) brightness(1.03) contrast(.94); }
 .dark-map .base-tiles { filter: grayscale(1) invert(1) brightness(.78) contrast(.9) sepia(.2) hue-rotate(180deg) saturate(1.4); }
 .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
 .leaflet-popup-content-wrapper { border-radius: 12px; }
