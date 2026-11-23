@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>BeautyFinder Berlin</title>
+  <meta name="description" content="Finde Kosmetikprodukte in Berliner Drogerien und Parfümerien – mit Live-Verfügbarkeit auf der Karte.">
+  <meta name="theme-color" content="#c2410c">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">◆</span>
+      <span>BeautyFinder <small>Berlin</small></span>
+    </div>
+    <span class="demo-badge" title="Bestände sind simuliert">Demo-Daten</span>
+  </header>
+
+  <main>
+    <!-- ============ TAB: SUCHE ============ -->
+    <section id="tab-search" class="tab active" aria-label="Produktsuche">
+      <div class="search-panel">
+        <form id="search-form" class="search-box" autocomplete="off" role="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="search-input" type="search" placeholder="Produkt oder Marke suchen, z. B. „CeraVe“" aria-label="Produkt suchen">
+          <button type="button" id="search-clear" class="icon-btn" aria-label="Suche leeren" hidden>✕</button>
+          <ul id="suggestions" class="suggestions" role="listbox" hidden></ul>
+        </form>
+
+        <div class="filters" id="chain-filters" aria-label="Händler filtern"></div>
+        <div class="filter-row">
+          <label class="toggle">
+            <input type="checkbox" id="only-available">
+            <span>Nur verfügbar</span>
+          </label>
+          <button type="button" id="locate-btn" class="link-btn">📍 Mein Standort</button>
+        </div>
+      </div>
+
+      <div class="layout">
+        <div class="results-pane">
+          <div id="product-card" class="product-card" hidden></div>
+          <div id="results-summary" class="results-summary"></div>
+          <ul id="results" class="results"></ul>
+          <div id="empty-state" class="empty-state">
+            <h2>Was suchst du?</h2>
+            <p>Gib ein Produkt ein – wir zeigen dir, in welcher Filiale von dm, Rossmann, Douglas oder Sephora in deiner Nähe es gerade vorrätig ist.</p>
+            <div class="popular">
+              <span>Beliebt:</span>
+              <div id="popular-list"></div>
+            </div>
+          </div>
+        </div>
+        <div class="map-pane">
+          <div id="map" aria-label="Karte von Berlin mit Filialen"></div>
+          <div class="legend" aria-hidden="true">
+            <span><i class="dot in"></i>Verfügbar</span>
+            <span><i class="dot low"></i>Wenige</span>
+            <span><i class="dot out"></i>Ausverkauft</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TAB: HAUT-CHECK ============ -->
+    <section id="tab-skin" class="tab" aria-label="Haut-Check">
+      <div class="skin-wrap">
+        <div class="scan-teaser">
+          <div class="scan-icon" aria-hidden="true">📷</div>
+          <div>
+            <h3>Hautscan per Kamera <span class="soon">bald</span></h3>
+            <p>Später analysiert die App ein Foto deiner Haut (z. B. Feuchtigkeit, Rötungen, Unreinheiten). Bis dahin hilft dir der Fragebogen.</p>
+          </div>
+        </div>
+
+        <form id="skin-form" class="skin-form">
+          <h2>Dein Haut-Check</h2>
+          <p class="muted">5 kurze Fragen – danach bekommst du eine Routine für <strong id="season-label"></strong>, mit Produkten, die du in Berlin direkt bekommst.</p>
+
+          <fieldset>
+            <legend>1. Wie fühlt sich deine Haut meistens an?</legend>
+            <div class="choices" data-name="skinType" data-type="single">
+              <button type="button" data-value="trocken">Trocken / spannt</button>
+              <button type="button" data-value="fettig">Fettig / glänzt</button>
+              <button type="button" data-value="mischhaut">Mischhaut (T-Zone)</button>
+              <button type="button" data-value="normal">Normal</button>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>2. Was beschäftigt dich gerade? <span class="muted">(mehrere möglich)</span></legend>
+            <div class="choices" data-name="concerns" data-type="multi">
+              <button type="button" data-value="unreinheiten">Pickel / Unreinheiten</button>
+              <button type="button" data-value="trockenheit">Trockene Stellen</button>
+              <button type="button" data-value="roetungen">Rötungen</button>
+              <button type="button" data-value="glanz">Glanz / große Poren</button>
+              <button type="button" data-value="falten">Erste Fältchen</button>
+              <button type="button" data-value="pigmentflecken">Pigmentflecken</button>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>3. Reagiert deine Haut empfindlich (Brennen, Jucken)?</legend>
+            <div class="choices" data-name="sensitive" data-type="single">
+              <button type="button" data-value="ja">Ja, oft</button>
+              <button type="button" data-value="manchmal">Manchmal</button>
+              <button type="button" data-value="nein">Nein</button>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>4. Wie viel bist du draußen?</legend>
+            <div class="choices" data-name="outdoor" data-type="single">
+              <button type="button" data-value="wenig">Kaum</button>
+              <button type="button" data-value="mittel">Täglich etwas</button>
+              <button type="button" data-value="viel">Viel / Sport draußen</button>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>5. Dein Budget pro Produkt?</legend>
+            <div class="choices" data-name="budget" data-type="single">
+              <button type="button" data-value="15">bis 15 €</button>
+              <button type="button" data-value="30">bis 30 €</button>
+              <button type="button" data-value="999">egal</button>
+            </div>
+          </fieldset>
+
+          <button type="submit" class="primary-btn">Routine anzeigen</button>
+          <p id="skin-error" class="error" hidden></p>
+        </form>
+
+        <div id="routine" class="routine" hidden></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabbar" aria-label="Hauptnavigation">
+    <button type="button" class="tab-btn active" data-tab="tab-search">
+      <span aria-hidden="true">🔍</span>Finden
+    </button>
+    <button type="button" class="tab-btn" data-tab="tab-skin">
+      <span aria-hidden="true">✨</span>Haut-Check
+    </button>
+  </nav>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
