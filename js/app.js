@@ -5,11 +5,17 @@
   // ---------- Konstanten ----------
   const DEFAULT_POS = { lat: 52.5219, lng: 13.4132, label: "Alexanderplatz" };
   const BERLIN_BOUNDS = { minLat: 52.33, maxLat: 52.68, minLng: 13.08, maxLng: 13.77 };
+  const css = (v, fb) => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || fb;
   const STATUS = {
-    in:  { label: "Verfügbar",   color: "#16a34a" },
-    low: { label: "Nur noch wenige", color: "#d97706" },
-    out: { label: "Ausverkauft", color: "#9ca3af" },
+    in:  { label: "Verfügbar",       color: css("--ok", "#1f9d55") },
+    low: { label: "Nur noch wenige", color: css("--warn", "#d48806") },
+    out: { label: "Ausverkauft",     color: css("--off", "#9aa5b4") },
   };
+
+  const svg = (d, cls = "ic") => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+  const PIN = svg('<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>', "ic sm");
+  const SUN = svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>');
+  const MOON = svg('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>');
 
   // ---------- State ----------
   const state = {
@@ -71,15 +77,43 @@
       $("#map").innerHTML = '<p class="map-fallback">Karte konnte nicht geladen werden (offline?). Die Liste funktioniert trotzdem.</p>';
       return;
     }
-    map = L.map("map", { zoomControl: false }).setView([52.505, 13.39], 12);
+    map = L.map("map", { zoomControl: false, minZoom: 10, maxBounds: [[52.2, 12.8], [52.8, 14.0]] }).setView([52.505, 13.39], 12);
     L.control.zoom({ position: "bottomright" }).addTo(map);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+
+    // Stadtplan: heller, grauer Stil – im Dark Mode die dunkle Variante
+    const dark = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches
+      && document.documentElement.dataset.theme !== "light";
+    if (dark) map.getContainer().classList.add("dark-map");
+    const tiles = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? "dark_nolabels" : "light_nolabels"}/{z}/{x}/{y}{r}.png`, {
       maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> · <a href="https://carto.com/">CARTO</a> · Bezirke <a href="https://www.statistik-berlin-brandenburg.de/">AfS BB</a>',
     }).addTo(map);
+    // Straßennamen als eigene Ebene über den Bezirksflächen
+    L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? "dark_only_labels" : "light_only_labels"}/{z}/{x}/{y}{r}.png`, {
+      maxZoom: 19, pane: "shadowPane", minZoom: 13,
+    }).addTo(map);
+    let tileErrors = 0;
+    tiles.on("tileerror", () => { if (++tileErrors === 8) toast("Stadtplan lädt nicht – Bezirkskarte wird angezeigt"); });
+
+    // Berliner Bezirke – immer sichtbar, auch ohne Internet-Kartenkacheln
+    if (typeof BERLIN_DISTRICTS !== "undefined") {
+      const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#2459d6";
+      const base = { color: accent, weight: 1.4, opacity: 0.55, fillColor: accent, fillOpacity: 0.035 };
+      L.geoJSON(BERLIN_DISTRICTS, {
+        style: () => base,
+        bubblingMouseEvents: true,
+        onEachFeature: (f, layer) => {
+          layer.bindTooltip(f.properties.name.replace("-", "-<br>"), {
+            permanent: true, direction: "center", className: "district-label",
+          });
+          layer.on("mouseover", () => layer.setStyle({ fillOpacity: 0.09, weight: 2 }));
+          layer.on("mouseout", () => layer.setStyle(base));
+        },
+      }).addTo(map);
+    }
 
     STORES.forEach((s) => {
-      const m = L.circleMarker([s.lat, s.lng], { radius: 7, weight: 2, bubblingMouseEvents: false }).addTo(map);
+      const m = L.circleMarker([s.lat, s.lng], { radius: 7, weight: 2, bubblingMouseEvents: false, pane: "markerPane" }).addTo(map);
       m.on("click", () => focusStore(s.id, false));
       storeMarkers.set(s.id, m);
     });
@@ -114,7 +148,7 @@
       const row = visible.get(s.id);
       const chainOn = state.chains.has(s.chain);
       if (!chainOn || (state.product && !row)) { m.setStyle({ opacity: 0, fillOpacity: 0 }); m.closePopup(); m.unbindPopup(); return; }
-      let fill = CHAINS[s.chain].color, stroke = "#fff", radius = 7;
+      let fill = CHAINS[s.chain].color, stroke = "#ffffff", radius = 6;
       if (state.product && row) {
         fill = STATUS[row.stock.status].color;
         stroke = CHAINS[s.chain].color;
@@ -242,7 +276,7 @@
       const st = STATUS[stock.status];
       const qtyText = stock.status === "out" ? "" : stock.status === "low" ? `noch ${stock.qty} Stück` : `${stock.qty} Stück`;
       const action = stock.status === "out"
-        ? `<button type="button" class="ghost-btn" data-action="notify" data-store="${store.id}">🔔 Benachrichtigen</button>`
+        ? `<button type="button" class="ghost-btn" data-action="notify" data-store="${store.id}">Benachrichtigen</button>`
         : `<button type="button" class="ghost-btn" data-action="reserve" data-store="${store.id}">Reservieren</button>`;
       return `
         <li class="result ${stock.status}" data-store="${store.id}" tabindex="0">
@@ -369,7 +403,7 @@
     const stepHtml = ([cat, r], i) => {
       if (!r) return `<li class="step"><span class="step-n">${i + 1}</span><div><b>${STEP_LABEL[cat]}</b><br><span class="muted">Kein passendes Produkt im Budget gefunden.</span></div></li>`;
       const near = nearestAvailable(r.p);
-      const where = near ? `📍 ${esc(CHAINS[near.s.chain].name)} ${esc(near.s.area)} · ${fmtKm(near.d)}` : "Gerade nirgends vorrätig";
+      const where = near ? `${PIN}${esc(CHAINS[near.s.chain].name)} ${esc(near.s.area)} · ${fmtKm(near.d)}` : "Gerade nirgends vorrätig";
       return `
         <li class="step">
           <span class="step-n">${i + 1}</span>
@@ -391,8 +425,8 @@
     $("#routine").innerHTML = `
       <div class="season-tip"><b>Tipp für ${SEASON_LABEL[sea]}:</b> ${SEASON_TIP[sea]}</div>
       <div class="routine-cols">
-        <div class="routine-col"><h3>☀️ Morgens</h3><ol>${morning.map(stepHtml).join("")}</ol></div>
-        <div class="routine-col"><h3>🌙 Abends</h3><ol>${evening.map(stepHtml).join("")}</ol></div>
+        <div class="routine-col"><h3>${SUN}Morgens</h3><ol>${morning.map(stepHtml).join("")}</ol></div>
+        <div class="routine-col"><h3>${MOON}Abends</h3><ol>${evening.map(stepHtml).join("")}</ol></div>
       </div>
       ${extra.length ? `<ul class="extra">${extra.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
       <p class="disclaimer">Diese Empfehlungen ersetzen keine ärztliche oder dermatologische Beratung.</p>

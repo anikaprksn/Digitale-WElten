@@ -5,14 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>BeautyFinder Berlin</title>
   <meta name="description" content="Finde Kosmetikprodukte in Berliner Drogerien und Parfümerien – mit Live-Verfügbarkeit auf der Karte.">
-  <meta name="theme-color" content="#c2410c">
+  <meta name="theme-color" content="#2459d6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
-      <span class="logo" aria-hidden="true">◆</span>
+      <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg></span>
       <span>BeautyFinder <small>Berlin</small></span>
     </div>
     <span class="demo-badge" title="Bestände sind simuliert">Demo-Daten</span>
@@ -35,7 +38,7 @@
             <input type="checkbox" id="only-available">
             <span>Nur verfügbar</span>
           </label>
-          <button type="button" id="locate-btn" class="link-btn">📍 Mein Standort</button>
+          <button type="button" id="locate-btn" class="link-btn"><svg class="ic sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>Mein Standort</button>
         </div>
       </div>
 
@@ -68,7 +71,7 @@
     <section id="tab-skin" class="tab" aria-label="Haut-Check">
       <div class="skin-wrap">
         <div class="scan-teaser">
-          <div class="scan-icon" aria-hidden="true">📷</div>
+          <div class="scan-icon" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div>
           <div>
             <h3>Hautscan per Kamera <span class="soon">bald</span></h3>
             <p>Später analysiert die App ein Foto deiner Haut (z. B. Feuchtigkeit, Rötungen, Unreinheiten). Bis dahin hilft dir der Fragebogen.</p>
@@ -139,16 +142,17 @@
 
   <nav class="tabbar" aria-label="Hauptnavigation">
     <button type="button" class="tab-btn active" data-tab="tab-search">
-      <span aria-hidden="true">🔍</span>Finden
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Finden
     </button>
     <button type="button" class="tab-btn" data-tab="tab-skin">
-      <span aria-hidden="true">✨</span>Haut-Check
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg>Haut-Check
     </button>
   </nav>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="js/berlin-districts.js"></script>
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
 </body>
