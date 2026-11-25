@@ -193,6 +193,13 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 .chip.pop { color: var(--text); }
 .chip.pop:hover { border-color: var(--accent); color: var(--accent); }
 
+/* Nutzen auf der Startseite (nach Nutzertest ergänzt) */
+.benefits { list-style: none; margin: 4px 0 26px; padding: 0; display: grid; gap: 10px; }
+.benefits li { display: flex; gap: 12px; align-items: flex-start; background: var(--surface); border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow-sm); }
+.benefits .ic { width: 20px; height: 20px; color: var(--accent); margin-top: 2px; }
+.benefits b { display: block; font-size: 14px; color: var(--text); }
+.benefits span { font-size: 13px; color: var(--muted); line-height: 1.45; }
+
 /* Stöbern nach Kategorie */
 .browse { margin: 8px 0 26px; }
 .browse-label, .popular > span { display: block; font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .07em; text-transform: uppercase; }
