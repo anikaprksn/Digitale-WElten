@@ -2,7 +2,9 @@
 
 ## Problem
 Wer ein bestimmtes Kosmetikprodukt sucht, läuft oft von Filiale zu Filiale (dm, Rossmann, Douglas, Sephora …),
-nur um festzustellen, dass es ausverkauft ist oder gar nicht geführt wird.
+nur um festzustellen, dass es ausverkauft ist oder gar nicht geführt wird. Viele bestellen deshalb seit der
+Corona-Pandemie lieber online – mit Verpackung, Lieferfahrten und Rücksendungen. BeautyFinder soll lokales
+Einkaufen so bequem machen wie online bestellen.
 
 ## Lösung
 Eine App, in die man ein Produkt eingibt und sofort sieht:
@@ -87,4 +89,4 @@ Empfehlung: Start mit **Crowdsourcing + 1–2 Partnern** in Berlin, um den Nutze
 3. Crowdsourcing-Meldungen („Gerade gesehen“) als erste echte Datenquelle
 4. Gespräch mit einem Händler/einer Marke über einen Bestands-Feed
 5. Native App (z. B. React Native/Flutter) sobald das Konzept bestätigt ist
-6. Geschäftsmodell: Affiliate/Click & Collect-Provision, gesponserte Platzierungen (klar gekennzeichnet), Daten-Insights für Händler
+6. Geschäftsmodell: Click & Collect-Provision, Gutschein-Aktionen für den Einkauf vor Ort, gesponserte Platzierungen (klar gekennzeichnet), Daten-Insights für Händler
